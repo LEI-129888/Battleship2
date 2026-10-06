@@ -1,6 +1,9 @@
 package battleship.history;
 
-import java.time.LocalDate;
+import battleship.IGame;
+import battleship.IMove;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -11,22 +14,21 @@ public class GameRecord {
     private String outcome; //vitoria, derrota, desistencia.....
     private int totalShots;
     private int totalHits;
-    private List<MoveRecord> moves = new ArrayList<>(); //todos os movimentos do jogo
+
+    @JsonDeserialize(contentAs = battleship.Move.class)
+    private List<IMove> moves = new ArrayList<>(); //todos os movimentos do jogo
 
     public GameRecord() {
         this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    public GameRecord(String outcome) {
-        this(); //constroi: basicamente faz a atribuição do tempo, como faz com o construtor default
-        this.outcome = outcome; //mas adiciona o outcome
-    }
-
-    public void addMove(MoveRecord move) {
+    public void addMove(IMove move) {
         this.moves.add(move); //adiciona aos movimentos
-        this.totalShots++; //adiciona o shot deste movimento
-        if(move.isHit()) { //se este movimento atingiu algo, adiciona-se tambem
-            this.totalHits++;
+        this.totalShots += move.getShots().size(); //adiciona os shots
+        if (move.getShotResults() != null) {
+            for(IGame.ShotResult result : move.getShotResults()) {
+                if (result.ship() != null) { this.totalHits++; }
+            }
         }
     }
 
@@ -39,11 +41,6 @@ public class GameRecord {
     public void setTotalShots(int totalShots) { this.totalShots = totalShots; }
     public int getTotalHits() { return totalHits; }
     public void setTotalHits(int totalHits) { this.totalHits = totalHits; }
-
-    public List<MoveRecord> getMoves() { return moves; }
-    public void setMoves(List<MoveRecord> moves) {
-        this.moves = moves;
-        this.totalShots = moves.size(); //aqui damos replace a toda uma lista ent o totalShots tem de ser o tamanho da lista
-        this.totalHits = (int) moves.stream().filter(MoveRecord::isHit).count(); //filtrar os movimentos que são hit, desta nova lista
-    }
+    public List<IMove> getMoves() { return moves; }
+    public void setMoves(List<IMove> moves) { this.moves = moves; }
 }

@@ -85,6 +85,8 @@ public class Tasks {
 						if (game.getRemainingShips() == 0) {
 							if (current != null) { //gravar no historico antes de terminar o jogo
 								current.setOutcome("DERROTA");
+								for (IMove move : game.getAlienMoves()) current.addMove(move); //copia todas as jogadas feitas para a gravação do jogo
+
 								historyWriter.saveGame(current);
 							}
 
@@ -109,6 +111,8 @@ public class Tasks {
 						if (game.getRemainingShips() == 0) {
 							if (current != null) { //gravar no histórico- VERIFICAR SE QUEREMOS GUARDAR UMA SIMULAÇÃO NO HISTORICO
 								current.setOutcome("DERROTA");
+								for (IMove move : game.getAlienMoves()) current.addMove(move);
+
 								historyWriter.saveGame(current);
 							}
 							game.over();
@@ -159,7 +163,11 @@ public class Tasks {
 		}
 		if (current != null) { //guardar no histórico antes da desistencia, se o jogo já tiver começado
 			current.setOutcome("DESISTÊNCIA");
-			historyWriter.saveGame(current);
+			if(game != null) {
+				for (IMove move : game.getAlienMoves())
+					current.addMove(move); //copia as jogadas da partida para a sessão
+			}
+			historyWriter.saveGame(current); //salvar a sessão no ficheiro
 		}
 		System.out.println(GOODBYE_MESSAGE);
 	}
