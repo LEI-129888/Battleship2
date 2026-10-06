@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameHistoryWriter {
-    private static final String DEFAULT_FILE_NAME= "historico_jogos.json"; //nome default para se algo der erro no nome do ficheiro
+    private static final String DEFAULT_FILE_NAME= "historico_jogos.json"; //nome default para o ficheiro de historico
     private final File storageFile; //local onde guardar ficheiro
     private final ObjectMapper objectMapper; //guarda o json legível e lê o que estava escrito anteriormente no ficheiro
 
@@ -42,7 +42,7 @@ public class GameHistoryWriter {
 
         try {
             objectMapper.writeValue(storageFile, lastGames);
-            System.out.println("Partida guardada com sucesso em: " + storageFile.getAbsolutePath());
+            System.out.println("Partida guardada com sucesso");
             return true;
         } catch (IOException e) {
             System.err.println("Falha ao gravar partida em JSON: " + e.getMessage());
