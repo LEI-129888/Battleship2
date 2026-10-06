@@ -32,6 +32,8 @@ public class Tasks {
 	private static final String MAPA = "mapa";
 	private static final String STATUS = "estado";
 	private static final String SIMULA = "simula";
+	private static final String PDF = "pdf";
+	private static final String SCOREBOARD = "scoreboard";
 
 	/**
 	 * This task also tests the fighting element of a round of three shots
@@ -104,6 +106,21 @@ public class Tasks {
                 case AJUDA:
                     menuHelp();
                     break;
+				case PDF:
+					if (game != null) {
+						PdfExporter.exportMovesToPdf(game.getAlienMoves(), "relatorio_jogadas.pdf");
+					} else {
+						System.out.println("Ainda nao iniciou nenhum jogo!");
+					}
+					break;
+
+				case SCOREBOARD:
+					if (game != null && !game.getAlienMoves().isEmpty()) {
+						// Guarda o estado atual da partida para poderes ver logo na tabela
+						ScoreBoardManager.saveScore("Jogador", game.getAlienMoves().size(), game.getHits(), game.getRemainingShips() == 0);
+					}
+					ScoreBoardManager.printScoreboard();
+					break;
 				default:
 					System.out.println("Que comando é esse??? Repete ...");
 			}
