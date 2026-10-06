@@ -133,6 +133,19 @@
 			<version>${jetbrains.annotations.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- Biblioteca para gerar PDFs (Impressão de jogadas) -->
+		<dependency>
+			<groupId>com.github.librepdf</groupId>
+			<artifactId>openpdf</artifactId>
+			<version>2.0.3</version>
+		</dependency>
+
+		<!-- Biblioteca para desenhar tabelas bonitas na consola (Scoreboard) -->
+		<dependency>
+			<groupId>de.vandermeer</groupId>
+			<artifactId>asciitable</artifactId>
+			<version>0.3.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>

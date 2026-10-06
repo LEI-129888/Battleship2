@@ -451,5 +451,7 @@ public class Game implements IGame
 			System.out.println("+--------------------------------------------------------------+");
 			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
 			System.out.println("+--------------------------------------------------------------+");
+
+			ScoreBoardManager.saveScore("Jogador", this.alienMoves.size(), this.countHits, this.getRemainingShips() == 0);
 	}
 }
