@@ -24,6 +24,13 @@ public class Tasks {
 	private static final String GOODBYE_MESSAGE = "Bons ventos!";
 
 	/**
+	 *  The constants about sound
+	 */
+	private static final String SPLASH = "splash";
+	private static final String EXPLOSION = "explosion";
+	private static final String ALARM = "alarm";
+
+	/**
 	 * Strings to be used by the user
 	 */
 	private static final String AJUDA = "ajuda";
@@ -86,11 +93,7 @@ public class Tasks {
 						int shipsAfter = game.getRemainingShips();
 						int hitsAfter = game.getHits();
 
-						if (shipsAfter < shipsBefore)
-							SoundManager.playAlarm();
-						else if (hitsAfter > hitsBefore)
-							SoundManager.playExplosion();
-						else SoundManager.playSplash();
+						SoundManager.play(decideSoundToPlay(shipsBefore, shipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
 
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
@@ -298,6 +301,22 @@ public class Tasks {
 		} else {
 			throw new IllegalArgumentException("Formato inválido. Use 'A3', 'A 3' ou similar.");
 		}
+	}
+
+	/**
+	 * Decides which sound should be played based on ships before and after the move and hits before and after the move
+	 * @param shipsBefore Number of ships remaining before the move
+	 * @param shipsAfter Number of ships remaining after the move
+	 * @param hitsBefore Number of total hits before before the move
+	 * @param hitsAfter Number of total hits after the move
+	 * @return String which represents the soundFileName at /src/java/resources
+	 */
+	public static String decideSoundToPlay(int shipsBefore, int shipsAfter, int hitsBefore, int hitsAfter) {
+		if (shipsAfter < shipsBefore)
+			return ALARM;
+		else if (hitsAfter > hitsBefore)
+			return EXPLOSION;
+		else return SPLASH;
 	}
 
 }

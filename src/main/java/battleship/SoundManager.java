@@ -24,16 +24,4 @@ public class SoundManager {
             }
         }).start();
     }
-
-    public static void playSplash() {
-        play("splash.mp3");
-    }
-
-    public static void playExplosion() {
-        play("explosion.mp3");
-    }
-
-    public static void playAlarm() {
-        play("alarm.mp3");
-    }
 }
