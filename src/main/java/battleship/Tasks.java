@@ -78,7 +78,7 @@ public class Tasks {
 					if (game != null) {
 						timer.stop();
 						System.out.println("Tempo da jogada: "+ timer.getTime()/1000.0 + "s");
-						lastTime = timer.getTime();
+						game.setLastTime(timer.getTime());
 						timer.reset();
 						game.readEnemyFire(in);
 						myFleet.printStatus();
@@ -137,7 +137,7 @@ public class Tasks {
 
 				case TEMPO:
 					if (game != null) {
-						if (lastTime != -1)
+						if (game.getLastTime() != -1)
 							System.out.println("Tempo da última jogada: " + lastTime/1000.0 + "s");
 						else
 							System.out.println("Ainda nào foi executada nenhuma rajada.");
