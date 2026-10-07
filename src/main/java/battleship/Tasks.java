@@ -78,7 +78,20 @@ public class Tasks {
 					break;
 				case RAJADA:
 					if (game != null) {
+						int shipsBefore = game.getRemainingShips();
+						int hitsBefore = game.getHits();
+
 						game.readEnemyFire(in);
+
+						int shipsAfter = game.getRemainingShips();
+						int hitsAfter = game.getHits();
+
+						if (shipsAfter < shipsBefore)
+							SoundManager.playAlarm();
+						else if (hitsAfter > hitsBefore)
+							SoundManager.playExplosion();
+						else SoundManager.playSplash();
+
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
 
