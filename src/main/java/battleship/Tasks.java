@@ -2,6 +2,7 @@ package battleship;
 
 import java.util.Scanner;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +43,7 @@ public class Tasks {
 
 		IFleet myFleet = null;
 		IGame game = null;
+		StopWatch timer = new StopWatch();
 		menuHelp();
 
 		System.out.print("> ");
@@ -54,11 +56,13 @@ public class Tasks {
 					myFleet = Fleet.createRandom();
 					game = new Game(myFleet);
 					game.printMyBoard(false, true);
+					timer.start();
 					break;
 				case LEFROTA:
 					myFleet = buildFleet(in);
 					game = new Game(myFleet);
 					game.printMyBoard(false, true);
+					timer.start();
 					break;
 				case STATUS:
 					if (myFleet != null)
@@ -70,6 +74,9 @@ public class Tasks {
 					break;
 				case RAJADA:
 					if (game != null) {
+						timer.stop();
+						System.out.println("Tempo da jogada: "+ timer.getTime()/1000.0 + "s");
+						timer.reset();
 						game.readEnemyFire(in);
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
@@ -78,6 +85,9 @@ public class Tasks {
 							game.over();
 							System.exit(0);
 						}
+						else
+							// Timer só é reiniciado quando o jogo ainda não acabou
+							timer.start();
 					}
 					break;
 				case SIMULA:
@@ -127,6 +137,8 @@ public class Tasks {
 			System.out.print("> ");
 			command = in.next();
 		}
+		// Quando desiste simplesmente para o timer
+		timer.stop();
 		System.out.println(GOODBYE_MESSAGE);
 	}
 
