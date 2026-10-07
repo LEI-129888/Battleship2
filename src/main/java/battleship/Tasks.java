@@ -35,6 +35,7 @@ public class Tasks {
 	private static final String SIMULA = "simula";
 	private static final String PDF = "pdf";
 	private static final String SCOREBOARD = "scoreboard";
+	private static final String TEMPO = "tempo";
 
 	/**
 	 * This task also tests the fighting element of a round of three shots
@@ -44,6 +45,7 @@ public class Tasks {
 		IFleet myFleet = null;
 		IGame game = null;
 		StopWatch timer = new StopWatch();
+		long lastTime = -1;
 		menuHelp();
 
 		System.out.print("> ");
@@ -76,6 +78,7 @@ public class Tasks {
 					if (game != null) {
 						timer.stop();
 						System.out.println("Tempo da jogada: "+ timer.getTime()/1000.0 + "s");
+						lastTime = timer.getTime();
 						timer.reset();
 						game.readEnemyFire(in);
 						myFleet.printStatus();
@@ -131,6 +134,18 @@ public class Tasks {
 					}
 					ScoreBoardManager.printScoreboard();
 					break;
+
+				case TEMPO:
+					if (game != null) {
+						if (lastTime != -1)
+							System.out.println("Tempo da última jogada: " + lastTime/1000.0 + "s");
+						else
+							System.out.println("Ainda nào foi executada nenhuma rajada.");
+						game.printMyBoard(true, false);
+					}
+					else
+						System.out.println("Ainda não foi iniciado nenhum jogo.");
+					break;
 				default:
 					System.out.println("Que comando é esse??? Repete ...");
 			}
@@ -155,6 +170,7 @@ public class Tasks {
 		System.out.println("- " + RAJADA + ": Realiza uma rajada de disparos.");
 		System.out.println("- " + SIMULA + ": Simula um jogo completo.");
 		System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
+		System.out.println("- " + TEMPO + ": Exibe o tempo que o jogador demorou para fazer a última rajada.");
 		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 		System.out.println("===============================================================");
 	}
