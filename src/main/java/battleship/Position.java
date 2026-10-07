@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -112,6 +113,7 @@ public class Position implements IPosition {
 	 *
 	 * @return true if the position is within the board, false otherwise
 	 */
+	@JsonIgnore //para não aparecer no historico dos moves, já q n é necessário
 	@Override
 	public boolean isInside() {
 		return row >= 0 && column >= 0 && row < Game.BOARD_SIZE && column < Game.BOARD_SIZE;
@@ -168,6 +170,7 @@ public class Position implements IPosition {
 	 *
 	 * @return true if the position is occupied, false otherwise
 	 */
+	@JsonIgnore //para não aparecer no historico dos moves, já q n é necessário
 	@Override
 	public boolean isOccupied() {
 		return isOccupied;

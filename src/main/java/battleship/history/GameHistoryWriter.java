@@ -4,6 +4,7 @@ package battleship.history;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature; //permite que o jackson leia as propriedades fora do construtor das classes e as mostre normalmente
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class GameHistoryWriter {
         this.storageFile = new File(fileName);
         this.objectMapper = new ObjectMapper();
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT); //indenta o json e deixa legível
+        this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); //deixa de falhar por não reconhecer atributos
     }
 
     public List<GameRecord> loadAllGames() { //carrega as partidas anteriormente guardadas no ficheiro JSON

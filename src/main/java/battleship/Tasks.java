@@ -180,7 +180,7 @@ public class Tasks {
 		System.out.println("Digite um dos comandos abaixo para interagir com o jogo:");
 		System.out.println("- " + GERAFROTA + ": Gera uma frota aleatória de navios.");
 		System.out.println("- " + LEFROTA + ": Permite criar e carregar uma frota personalizada.");
-		System.out.println("- " + STATUS + ": Mostra o status atual da frota.)");
+		System.out.println("- " + STATUS + ": Mostra o status atual da frota.");
 		System.out.println("- " + MAPA + ": Exibe o mapa da frota.");
 		System.out.println("- " + RAJADA + ": Realiza uma rajada de disparos.");
 		System.out.println("- " + SIMULA + ": Simula um jogo completo.");
