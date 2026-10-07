@@ -158,9 +158,10 @@ public class Tasks {
 					break;
 
 				case TUI:
-					if (game != null)
-						BoardTUI.displayBoard(((Game) game).getBoard(true));
-					else
+					if (game != null) {
+						BoardTUI tui = new BoardTUI((Game) game, current, historyWriter);
+						tui.start();
+					} else
 						System.out.println("Ainda não iniciou nenhum jogo.");
 					break;
 
