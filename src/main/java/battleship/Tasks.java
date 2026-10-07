@@ -5,6 +5,9 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import battleship.history.GameRecord;
+import battleship.history.GameHistoryWriter;
+import java.util.List;
 
 /**
  * The type Tasks.
@@ -32,6 +35,7 @@ public class Tasks {
 	private static final String MAPA = "mapa";
 	private static final String STATUS = "estado";
 	private static final String SIMULA = "simula";
+	private static final String HISTORICO = "historico"; //devemos poder ver um histórico dos jogos a partir do menu
 	private static final String PDF = "pdf";
 	private static final String SCOREBOARD = "scoreboard";
 
@@ -42,6 +46,8 @@ public class Tasks {
 
 		IFleet myFleet = null;
 		IGame game = null;
+		GameHistoryWriter historyWriter = new GameHistoryWriter(); //para escrever o historico
+		GameRecord current = null; //guardar este jogo
 		menuHelp();
 
 		System.out.print("> ");
@@ -53,11 +59,13 @@ public class Tasks {
 				case GERAFROTA:
 					myFleet = Fleet.createRandom();
 					game = new Game(myFleet);
+					current =  new GameRecord(); //inicializa o registo do jogo
 					game.printMyBoard(false, true);
 					break;
 				case LEFROTA:
 					myFleet = buildFleet(in);
 					game = new Game(myFleet);
+					current = new GameRecord();
 					game.printMyBoard(false, true);
 					break;
 				case STATUS:
@@ -75,6 +83,13 @@ public class Tasks {
 						game.printMyBoard(true, false);
 
 						if (game.getRemainingShips() == 0) {
+							if (current != null) { //gravar no historico antes de terminar o jogo
+								current.setOutcome("DERROTA");
+								for (IMove move : game.getAlienMoves()) current.addMove(move); //copia todas as jogadas feitas para a gravação do jogo
+
+								historyWriter.saveGame(current);
+							}
+
 							game.over();
 							System.exit(0);
 						}
@@ -94,6 +109,12 @@ public class Tasks {
 						}
 
 						if (game.getRemainingShips() == 0) {
+							if (current != null) { //gravar no histórico- VERIFICAR SE QUEREMOS GUARDAR UMA SIMULAÇÃO NO HISTORICO
+								current.setOutcome("DERROTA");
+								for (IMove move : game.getAlienMoves()) current.addMove(move);
+
+								historyWriter.saveGame(current);
+							}
 							game.over();
 							System.exit(0);
 						}
@@ -106,6 +127,19 @@ public class Tasks {
                 case AJUDA:
                     menuHelp();
                     break;
+				case HISTORICO:
+					List<GameRecord> historico = historyWriter.loadAllGames();
+					System.out.println("================= HISTÓRICO DE PARTIDAS ===================");
+					if(historico.isEmpty()) {
+						System.out.println("Nenhuma partida gravada até ao momento.");
+					} else {
+						for (GameRecord r: historico) {
+							System.out.printf("[%s] Resultado: %s | Tiros: %d | Acertos: %d%n",
+									r.getTimestamp(), r.getOutcome(), r.getTotalShots(), r.getTotalHits());
+						}
+					}
+					System.out.println("===========================================================");
+					break;
 				case PDF:
 					if (game != null) {
 						PdfExporter.exportMovesToPdf(game.getAlienMoves(), "relatorio_jogadas.pdf");
@@ -127,6 +161,14 @@ public class Tasks {
 			System.out.print("> ");
 			command = in.next();
 		}
+		if (current != null) { //guardar no histórico antes da desistencia, se o jogo já tiver começado
+			current.setOutcome("DESISTÊNCIA");
+			if(game != null) {
+				for (IMove move : game.getAlienMoves())
+					current.addMove(move); //copia as jogadas da partida para a sessão
+			}
+			historyWriter.saveGame(current); //salvar a sessão no ficheiro
+		}
 		System.out.println(GOODBYE_MESSAGE);
 	}
 
@@ -138,11 +180,12 @@ public class Tasks {
 		System.out.println("Digite um dos comandos abaixo para interagir com o jogo:");
 		System.out.println("- " + GERAFROTA + ": Gera uma frota aleatória de navios.");
 		System.out.println("- " + LEFROTA + ": Permite criar e carregar uma frota personalizada.");
-		System.out.println("- " + STATUS + ": Mostra o status atual da frota.)");
+		System.out.println("- " + STATUS + ": Mostra o status atual da frota.");
 		System.out.println("- " + MAPA + ": Exibe o mapa da frota.");
 		System.out.println("- " + RAJADA + ": Realiza uma rajada de disparos.");
 		System.out.println("- " + SIMULA + ": Simula um jogo completo.");
 		System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
+		System.out.println("- " + HISTORICO + ": Exibe o histórico de partidas guardadas.");
 		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 		System.out.println("===============================================================");
 	}

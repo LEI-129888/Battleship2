@@ -3,6 +3,9 @@ package battleship;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents a position on the game board.
@@ -59,7 +62,8 @@ public class Position implements IPosition {
 	 * @param row    the row coordinate of the position
 	 * @param column the column coordinate of the position
 	 */
-	public Position(int row, int column) {
+	@JsonCreator
+	public Position(@JsonProperty("row") int row, @JsonProperty("column") int column) {
 		this.row = row;
 		this.column = column;
 		this.isOccupied = false;
@@ -109,6 +113,7 @@ public class Position implements IPosition {
 	 *
 	 * @return true if the position is within the board, false otherwise
 	 */
+	@JsonIgnore //para não aparecer no historico dos moves, já q n é necessário
 	@Override
 	public boolean isInside() {
 		return row >= 0 && column >= 0 && row < Game.BOARD_SIZE && column < Game.BOARD_SIZE;
@@ -165,6 +170,7 @@ public class Position implements IPosition {
 	 *
 	 * @return true if the position is occupied, false otherwise
 	 */
+	@JsonIgnore //para não aparecer no historico dos moves, já q n é necessário
 	@Override
 	public boolean isOccupied() {
 		return isOccupied;

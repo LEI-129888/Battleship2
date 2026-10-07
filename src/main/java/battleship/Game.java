@@ -386,7 +386,8 @@ public class Game implements IGame
 			return new ShotResult(true, false, null, false);
 		else
 		{
-			ship.shoot(pos);
+			ship.shoot(pos); //atualiza apenas a posição relacionada ao barco
+			pos.shoot(); //atualizar hit na posição do tiro também- para o JSON
 			countHits++;
 			if (!ship.stillFloating()) {
 				countSinks++;
