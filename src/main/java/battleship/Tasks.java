@@ -38,6 +38,7 @@ public class Tasks {
 	private static final String HISTORICO = "historico"; //devemos poder ver um histórico dos jogos a partir do menu
 	private static final String PDF = "pdf";
 	private static final String SCOREBOARD = "scoreboard";
+	private static final String TUI = "tui";
 
 	/**
 	 * This task also tests the fighting element of a round of three shots
@@ -155,6 +156,14 @@ public class Tasks {
 					}
 					ScoreBoardManager.printScoreboard();
 					break;
+
+				case TUI:
+					if (game != null)
+						BoardTUI.displayBoard(((Game) game).getBoard(true));
+					else
+						System.out.println("Ainda não iniciou nenhum jogo.");
+					break;
+
 				default:
 					System.out.println("Que comando é esse??? Repete ...");
 			}
@@ -186,6 +195,7 @@ public class Tasks {
 		System.out.println("- " + SIMULA + ": Simula um jogo completo.");
 		System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
 		System.out.println("- " + HISTORICO + ": Exibe o histórico de partidas guardadas.");
+		System.out.println("- " + TUI + ": Exibe o tabuleiro gráfico no terminal.");
 		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 		System.out.println("===============================================================");
 	}

@@ -455,4 +455,18 @@ public class Game implements IGame
 
 			ScoreBoardManager.saveScore("Jogador", this.alienMoves.size(), this.countHits, this.getRemainingShips() == 0);
 	}
+
+	public char[][] getBoard(boolean showShots) {
+		char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
+		for (int r = 0; r < BOARD_SIZE; r++) {
+			for(int c = 0; c < BOARD_SIZE; c++) {
+				board [r][c] = EMPTY_MARKER;
+			}
+		}
+		printShips(this.myFleet, board);
+		if(showShots) {
+			printBoardShots(this.alienMoves, board);
+		}
+		return board;
+	}
 }
