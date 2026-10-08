@@ -2,6 +2,7 @@ package battleship;
 
 import java.util.Scanner;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,7 @@ public class Tasks {
 	private static final String PDF = "pdf";
 	private static final String SCOREBOARD = "scoreboard";
 	private static final String TUI = "tui";
+	private static final String TEMPO = "tempo";
 
 	/**
 	 * This task also tests the fighting element of a round of three shots
@@ -47,6 +49,7 @@ public class Tasks {
 
 		IFleet myFleet = null;
 		IGame game = null;
+		StopWatch timer = new StopWatch();
 		GameHistoryWriter historyWriter = new GameHistoryWriter(); //para escrever o historico
 		GameRecord current = null; //guardar este jogo
 		menuHelp();
@@ -62,12 +65,14 @@ public class Tasks {
 					game = new Game(myFleet);
 					current =  new GameRecord(); //inicializa o registo do jogo
 					game.printMyBoard(false, true);
+					timer.start();
 					break;
 				case LEFROTA:
 					myFleet = buildFleet(in);
 					game = new Game(myFleet);
 					current = new GameRecord();
 					game.printMyBoard(false, true);
+					timer.start();
 					break;
 				case STATUS:
 					if (myFleet != null)
@@ -79,6 +84,10 @@ public class Tasks {
 					break;
 				case RAJADA:
 					if (game != null) {
+						timer.stop();
+						System.out.println("Tempo da jogada: "+ timer.getTime()/1000.0 + "s");
+						game.setLastTime(timer.getTime());
+						timer.reset();
 						game.readEnemyFire(in);
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
@@ -94,6 +103,9 @@ public class Tasks {
 							game.over();
 							System.exit(0);
 						}
+						else
+							// Timer só é reiniciado quando o jogo ainda não acabou
+							timer.start();
 					}
 					break;
 				case SIMULA:
@@ -165,6 +177,18 @@ public class Tasks {
 						System.out.println("Ainda não iniciou nenhum jogo.");
 					break;
 
+
+				case TEMPO:
+					if (game != null) {
+						if (game.getLastTime() != -1)
+							System.out.println("Tempo da última jogada: " + game.getLastTime()/1000.0 + "s");
+						else
+							System.out.println("Ainda nào foi executada nenhuma rajada.");
+						game.printMyBoard(true, false);
+					}
+					else
+						System.out.println("Ainda não foi iniciado nenhum jogo.");
+					break;
 				default:
 					System.out.println("Que comando é esse??? Repete ...");
 			}
@@ -179,6 +203,8 @@ public class Tasks {
 			}
 			historyWriter.saveGame(current); //salvar a sessão no ficheiro
 		}
+		// Quando desiste simplesmente para o timer
+		timer.stop();
 		System.out.println(GOODBYE_MESSAGE);
 	}
 
@@ -197,6 +223,7 @@ public class Tasks {
 		System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
 		System.out.println("- " + HISTORICO + ": Exibe o histórico de partidas guardadas.");
 		System.out.println("- " + TUI + ": Exibe o tabuleiro gráfico no terminal.");
+		System.out.println("- " + TEMPO + ": Exibe o tempo que o jogador demorou para fazer a última rajada.");
 		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 		System.out.println("===============================================================");
 	}

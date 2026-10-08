@@ -120,4 +120,14 @@ public interface IGame
 	void printAlienBoard(boolean show_shots, boolean show_legend);
 
 	void over();
+
+	/**
+	 * Sets the time of the last move
+	 */
+	void setLastTime(long time);
+	/**
+	 * Gets the time of the last move
+	 * @return the time of the last move
+	 */
+	long getLastTime();
 }
