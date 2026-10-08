@@ -141,8 +141,15 @@ public class BoardTUI {
                 timer.stop();
                 game.setLastTime(timer.getTime());
                 Scanner sc = new Scanner(new ByteArrayInputStream(input.getBytes()));
+                int shipsBefore = game.getRemainingShips();
+                int hitsBefore = game.getHits();
                 game.readEnemyFire(sc);
                 refreshDisplay();
+
+                int shipsAfter = game.getRemainingShips();
+                int hitsAfter = game.getHits();
+
+                SoundManager.play(Tasks.decideSoundToPlay(shipsBefore, shipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
 
                 if(game.getRemainingShips() == 0) {
                     gameOver("Todos os navios foram afundados.");
