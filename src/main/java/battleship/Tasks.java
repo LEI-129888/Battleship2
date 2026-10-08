@@ -49,7 +49,6 @@ public class Tasks {
 		IFleet myFleet = null;
 		IGame game = null;
 		StopWatch timer = new StopWatch();
-		long lastTime = -1;
 		GameHistoryWriter historyWriter = new GameHistoryWriter(); //para escrever o historico
 		GameRecord current = null; //guardar este jogo
 		menuHelp();
@@ -172,7 +171,7 @@ public class Tasks {
 				case TEMPO:
 					if (game != null) {
 						if (game.getLastTime() != -1)
-							System.out.println("Tempo da última jogada: " + lastTime/1000.0 + "s");
+							System.out.println("Tempo da última jogada: " + game.getLastTime()/1000.0 + "s");
 						else
 							System.out.println("Ainda nào foi executada nenhuma rajada.");
 						game.printMyBoard(true, false);
