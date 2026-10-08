@@ -10,6 +10,7 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+import org.apache.commons.lang3.time.StopWatch;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class BoardTUI {
             buttonsPanel.addComponent(new Button("Tiros", this::onTiros));
             buttonsPanel.addComponent(new Button("Scoreboard", this::onScoreboard));
             buttonsPanel.addComponent(new Button("Historico", this::onHistorico));
+            buttonsPanel.addComponent(new Button("Tempo", this::onTempo));
             buttonsPanel.addComponent(new Button("Ajuda", this::onAjuda));
             buttonsPanel.addComponent(new Button("Sair", () -> window.close()));
             main.addComponent(buttonsPanel.withBorder(Borders.singleLine("Comandos")));
@@ -131,9 +133,13 @@ public class BoardTUI {
     }
 
     private void onRajada() {
+        StopWatch timer = new StopWatch();
+        timer.start();
         String input = TextInputDialog.showDialog(gui, "Disparar Rajada", "Indique 3 coordenadas", "");
         if (input != null && !input.trim().isEmpty()) {
             try {
+                timer.stop();
+                game.setLastTime(timer.getTime());
                 Scanner sc = new Scanner(new ByteArrayInputStream(input.getBytes()));
                 game.readEnemyFire(sc);
                 refreshDisplay();
@@ -143,6 +149,8 @@ public class BoardTUI {
                 }
             } catch (Exception e) {
                 MessageDialog.showMessageDialog(gui, "Erro", e.getMessage(), MessageDialogButton.OK);
+            } finally {
+                timer.reset();
             }
         }
     }
@@ -181,6 +189,14 @@ public class BoardTUI {
     }
     private void onAjuda() {
         MessageDialog.showMessageDialog(gui, "Ajuda", "Clique nos botões de comando.\nRajada pede 3 coordenadas.\nSimula dispara uma jogada automática.\n", MessageDialogButton.OK);
+    }
+
+    private void onTempo() {
+        long tempo = game.getLastTime();
+        if (tempo == -1)
+            MessageDialog.showMessageDialog(gui, "Tempo", "Ainda não foi executada nenhuma rajada.");
+        else
+            MessageDialog.showMessageDialog(gui, "Tempo", "Tempo da última jogada: " + game.getLastTime() / 1000.0 + "s");
     }
 
 }
