@@ -168,6 +168,7 @@ public class Game implements IGame
 	private Integer countHits;
 	private Integer countSinks;
 	private int moveNumber;
+	private long lastTime = -1;
 
 	//------------------------------------------------------------------
 	public Game(IFleet myFleet)
@@ -454,5 +455,27 @@ public class Game implements IGame
 			System.out.println("+--------------------------------------------------------------+");
 
 			ScoreBoardManager.saveScore("Jogador", this.alienMoves.size(), this.countHits, this.getRemainingShips() == 0);
+	}
+
+	public void setLastTime(long time) {
+		lastTime = time;
+	}
+
+	public long getLastTime() {
+		return lastTime;
+	}
+
+	public char[][] getBoard(boolean showShots) {
+		char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
+		for (int r = 0; r < BOARD_SIZE; r++) {
+			for(int c = 0; c < BOARD_SIZE; c++) {
+				board [r][c] = EMPTY_MARKER;
+			}
+		}
+		printShips(this.myFleet, board);
+		if(showShots) {
+			printBoardShots(this.alienMoves, board);
+		}
+		return board;
 	}
 }
