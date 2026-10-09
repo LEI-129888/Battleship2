@@ -20,8 +20,9 @@ public class PdfExporter {
             PdfWriter.getInstance(document, new FileOutputStream(filename));
             document.open();
 
+            // 1. Título melhorado
             Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
-            document.add(new Paragraph("Relatorio de Jogadas - Batalha Naval", titleFont));
+            document.add(new Paragraph("Relatório Oficial de Jogadas - Batalha Naval", titleFont));
 
             String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
             document.add(new Paragraph("Data da partida: " + date));
@@ -39,6 +40,12 @@ public class PdfExporter {
             }
 
             document.add(table);
+
+            // 2. Mensagem de rodapé adicionada para gerar uma alteração no código
+            document.add(new Paragraph(" "));
+            Font footerFont = FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10);
+            document.add(new Paragraph("Documento gerado automaticamente pelo motor do jogo.", footerFont));
+
             System.out.println("PDF gerado com sucesso em: " + filename);
 
         } catch (Exception e) {
