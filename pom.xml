@@ -147,6 +147,13 @@
 			<version>0.3.2</version>
 		</dependency>
 
+		<!-- Biblioteca para reproduzir som .mp3-->
+		<dependency>
+			<groupId>javazoom</groupId>
+			<artifactId>jlayer</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.googlecode.lanterna</groupId>
 			<artifactId>lanterna</artifactId>
