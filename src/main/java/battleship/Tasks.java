@@ -240,6 +240,8 @@ public class Tasks {
 		System.out.println("- " + HISTORICO + ": Exibe o histórico de partidas guardadas.");
 		System.out.println("- " + TUI + ": Exibe o tabuleiro gráfico no terminal.");
 		System.out.println("- " + TEMPO + ": Exibe o tempo que o jogador demorou para fazer a última rajada.");
+		System.out.println("- " + SCOREBOARD + ": Imprime dados do jogo na consola");
+		System.out.println("- " + PDF + ": Gera o ficheiro pdf com os dados que são impressos na consola no scoreboard");
 		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 		System.out.println("===============================================================");
 	}
