@@ -13,9 +13,10 @@ Link for YouTube video: https://youtu.be/xto4C6QdYfI
 - [Key Features](#-key-features)
 - [Technical Stack](#-technical-stack)
 - [Installation & Setup](#-installation--setup)
-- [Code Architecture](#-code-architecture)
+- [Code Architecture](#-documentation)
 - [Roadmap](#-roadmap)
 - [Contributing](#-contributing)
+- [Prompt Details](#-prompt-details)
 
 ---
 
@@ -140,6 +141,23 @@ Contributions are what make the open-source community such an amazing place to l
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a **Pull Request**
+
+---
+
+## 💻 Prompt Details
+Prompt escolhido para jogo contra oponente IA.
+Prompt:
+"Perfeito. Agora que dominas o protocolo JSON de comunicação, vamos iniciar a partida real e aplicar a tua doutrina tática de combate.
+
+Regras táticas para esta partida:
+1. Mantém um Diário de Bordo mental: regista tiros anteriores, acertos e navios já afundados.
+2. Modo de Caça: enquanto procuras navios, explora o tabuleiro em padrão de xadrez e prioriza o centro do mapa (linhas D-G, colunas 4-7). Nunca repitas tiros nem dispares fora do mapa (A-J, 1-10).
+3. Modo de Foco: quando acertares num navio que não vá ao fundo de imediato, concentra as rajadas seguintes estritamente nas casas ortogonais vizinhas (N, S, E, O) para encontrar a linha do navio.
+4. Perímetro de Segurança: assim que um navio for afundado, nunca dispares no raio de 1 casa em seu redor (incluindo diagonais), pois os navios não se tocam.
+5. Formato de resposta: apresenta sempre um resumo breve do teu raciocínio seguido estritamente pelo bloco JSON com as 3 coordenadas.
+6. Anuncie o fim do jogo caso a sua frota seja totalmente afundada. Do mesmo modo, a vitória será sua se afundar todos os navios do oponente.
+
+Começa o jogo agora e envia a tua primeira rajada de 3 tiros em JSON."
 
 ---
 
