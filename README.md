@@ -7,7 +7,7 @@
 > A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.
 
 ---
-
+Link for YouTube video: https://youtu.be/xto4C6QdYfI
 ## 📖 Table of Contents
 - [Project Overview](#-project-overview)
 - [Key Features](#-key-features)
