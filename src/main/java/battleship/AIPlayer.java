@@ -13,9 +13,8 @@ import dev.langchain4j.model.output.Response;
 
 public class AIPlayer {
     // Constants
-    private final String OPEN_ROUTER_API;
-    private static final String BASEURL = "https://openrouter.ai/api/v1";
-    private static final String MODELNAME = "openrouter/free";
+    private static final String BASEURL = "https://generativelanguage.googleapis.com/v1beta/openai/";
+    private static final String MODELNAME = "gemini-3.5-flash-lite";
     private static final double TEMPERATURE = 0.2;
     private static final String SYSPROMPT = """
             És um perito no jogo da Batalha Naval (versão Descobrimentos Portugueses). O jogo decorre num tabuleiro com linhas de A a J e colunas de 1 a 10.
@@ -57,16 +56,16 @@ public class AIPlayer {
     public AIPlayer() {
         Dotenv dotenv = Dotenv.load();
 
-        this.OPEN_ROUTER_API = dotenv.get("OPEN_ROUTER_API");
+        String apiKey = dotenv.get("GOOGLE_API");
 
         this.agent = OpenAiChatModel.builder()
                 .baseUrl(BASEURL)
-                .apiKey(OPEN_ROUTER_API)
+                .apiKey(apiKey)
                 .modelName(MODELNAME)
                 .temperature(TEMPERATURE)
                 .build();
 
-        this.chatMemory = MessageWindowChatMemory.withMaxMessages(50);
+        this.chatMemory = MessageWindowChatMemory.withMaxMessages(150);
         this.chatMemory.add(SystemMessage.systemMessage(SYSPROMPT));
     }
 
@@ -85,6 +84,7 @@ public class AIPlayer {
         try {
             Response<AiMessage> response = agent.generate(chatMemory.messages());
             chatMemory.add(response.content());
+            System.out.println(response.content().text());
             return response.content().text();
         } catch (Exception e) {
             System.err.println("Falha na comunicação com a IA (" + e.getMessage() + ").");
