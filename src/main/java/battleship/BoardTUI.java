@@ -23,6 +23,8 @@ public class BoardTUI {
     private final GameHistoryWriter historyWriter;
     private final AIPlayer ai;
     private String lastAiResult = "";
+    private AIPlayer playerAi;
+    private String lastPlayerAiResult = "";
 
     private WindowBasedTextGUI gui;
     private BasicWindow window;
@@ -94,9 +96,10 @@ public class BoardTUI {
 
     private void gameOver(String motivo, boolean playerWon) {
         game.over();
-        if (current != null && historyWriter != null) {
+        if (current != null && historyWriter != null && current.getOutcome() == null) {
             current.setOutcome(playerWon ? "VITÓRIA" : "DERROTA");
-            for (IMove move : game.getAlienMoves()) {
+            List<IMove> movesToSave = !game.getMyMoves().isEmpty() ? game.getMyMoves() : game.getAlienMoves();
+            for (IMove move : movesToSave) {
                 current.addMove(move);
             }
             historyWriter.saveGame(current);
@@ -218,11 +221,84 @@ public class BoardTUI {
     }
 
     private void onSimula() {
-        if (game.getRemainingShips() > 0) {
-            game.randomEnemyFire();
+        if (playerAi == null) {
+            playerAi = new AIPlayer();
+        }
+
+        while (game.getRemainingShips() > 0 && !game.getAlienFleet().getFloatingShips().isEmpty()) {
+            StopWatch timer = new StopWatch();
+            timer.start();
+
+            // 1. Turno da IA do Jogador
+            statusLabel.setText("Simulação: IA do Jogador a pensar...");
+            try { gui.updateScreen(); } catch (IOException ignored) {}
+
+            int enemyShipsBefore = game.getAlienFleet().getFloatingShips().size();
+            int hitsBefore = game.getHits();
+
+            String playerAiShotsJson = playerAi.nextShot(lastPlayerAiResult);
+            if (playerAiShotsJson != null) {
+                try {
+                    List<IPosition> playerShots = Tasks.parseAiShots(playerAiShotsJson);
+                    game.firePlayerShots(playerShots);
+                } catch (Exception e) {
+                    game.randomPlayerFire();
+                }
+            } else {
+                game.randomPlayerFire();
+            }
+
+            timer.stop();
+            game.setLastTime(timer.getTime());
+
+            IMove lastPlayerMove = game.getMyMoves().getLast();
+            lastPlayerAiResult = lastPlayerMove.processEnemyFire(false);
+
+            int enemyShipsAfter = game.getAlienFleet().getFloatingShips().size();
+            int hitsAfter = game.getHits();
+            SoundManager.play(Tasks.decideSoundToPlay(enemyShipsBefore, enemyShipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
+
             refreshDisplay();
+            try { gui.updateScreen(); } catch (IOException ignored) {}
+
+            if (game.getAlienFleet().getFloatingShips().isEmpty()) {
+                gameOver("A tua IA afundou todos os navios inimigos na simulação! Vitória!", true);
+                return;
+            }
+
+            // 2. Turno da IA Inimiga
+            statusLabel.setText("Simulação: IA Inimiga a pensar...");
+            try { gui.updateScreen(); } catch (IOException ignored) {}
+
+            String enemyAiShotsJson = ai.nextShot(lastAiResult);
+            if (enemyAiShotsJson != null) {
+                try {
+                    List<IPosition> enemyShots = Tasks.parseAiShots(enemyAiShotsJson);
+                    game.fireShots(enemyShots);
+                } catch (Exception e) {
+                    game.randomEnemyFire();
+                }
+            } else {
+                game.randomEnemyFire();
+            }
+
+            IMove lastEnemyMove = game.getAlienMoves().getLast();
+            lastAiResult = lastEnemyMove.processEnemyFire(false);
+
+            refreshDisplay();
+            try { gui.updateScreen(); } catch (IOException ignored) {}
+            System.out.println("Tempo da jogada (Simulação): " + (game.getLastTime() / 1000.0) + "s");
+
             if (game.getRemainingShips() == 0) {
-                gameOver("Frota destruída na simulação", false);
+                gameOver("Frota destruída pela IA inimiga na simulação.", false);
+                return;
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
             }
         }
     }
@@ -240,7 +316,9 @@ public class BoardTUI {
     }
 
     private void onScoreboard() {
-        ScoreBoardManager.saveScore("Jogador", game.getAlienMoves().size(), game.getHits(), game.getAlienFleet().getFloatingShips().isEmpty());
+        int totalMoves = !game.getMyMoves().isEmpty() ? game.getMyMoves().size() : game.getAlienMoves().size();
+        boolean playerWon = game.getAlienFleet().getFloatingShips().isEmpty() && game.getRemainingShips() > 0;
+        ScoreBoardManager.saveScore("Jogador", totalMoves, game.getHits(), playerWon);
         MessageDialog.showMessageDialog(gui, "Scoreboard", "Pontuação atual registada no scoreboard.", MessageDialogButton.OK);
     }
 

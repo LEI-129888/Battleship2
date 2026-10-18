@@ -137,4 +137,8 @@ public interface IGame
 	 * @return the time of the last move
 	 */
 	long getLastTime();
+
+	String randomPlayerFire();
+
+	void firePlayerShots(List<IPosition> shots);
 }
