@@ -419,7 +419,6 @@ public class Tasks {
 		int enemyShipsBefore = game.getAlienFleet().getFloatingShips().size();
 		int hitsBefore = game.getHits();
 
-		System.out.println("Introduz as 3 coordenadas da tua rajada:");
 		game.readPlayerFire(in);
 
 		if (timer.isStarted()) {
