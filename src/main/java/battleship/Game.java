@@ -22,8 +22,7 @@ public class Game implements IGame
 	 * @param showLegend  if true, displays an explanatory legend of the symbols used
 	 *                    to represent various elements such as ships, misses, hits, etc.
 	 */
-	public static void printBoard(IFleet fleet, List<IMove> moves,boolean show_ships, boolean show_shots, boolean showLegend) {
-
+	public static void printBoard(IFleet fleet, List<IMove> moves, boolean show_ships, boolean show_shots, boolean showLegend) {
 		assert fleet != null;
 		assert moves != null;
 
@@ -36,22 +35,29 @@ public class Game implements IGame
 		if (show_ships) {
 			printShips(fleet, map);
 		} else {
-			for (IShip ship : fleet.getSunkShips())
-				for (IPosition pos : ship.getPositions())
-					map[pos.getRow()][pos.getColumn()] = SHIP_MARKER;
+			for (IShip ship : fleet.getShips()) {
+				for (IPosition pos : ship.getPositions()) {
+					if (pos.isHit()) {
+						map[pos.getRow()][pos.getColumn()] = SHIP_MARKER;
+					}
+				}
+				if (!ship.stillFloating()) {
+					for (IPosition adjacent_pos : ship.getAdjacentPositions()) {
+						map[adjacent_pos.getRow()][adjacent_pos.getColumn()] = SHIP_ADJACENT_MARKER;
+					}
+				}
+			}
 		}
-
 		if (show_shots)
 			printBoardShots(moves, map);
 
 		printBoardFrame(map);
-
 		if (showLegend) {
 			System.out.println("          LEGENDA");
 			System.out.println("'" + SHIP_MARKER + "'->navio, '" + SHIP_ADJACENT_MARKER + "'->adjacente a navio, '" + EMPTY_MARKER + "'->água");
 			System.out.println("'" + SHOT_SHIP_MARKER + "'->Tiro certeiro, '" + SHOT_WATER_MARKER + "'->Tiro na água");
+			System.out.println();
 		}
-		System.out.println();
 	}
 
 	private static void printShips(IFleet fleet, char[][] map) {
@@ -330,17 +336,15 @@ public class Game implements IGame
 		assert in != null;
 
 		String input = in.nextLine().trim();
+		if (input.isEmpty() && in.hasNextLine()) {
+			input = in.nextLine().trim();
+		}
 
-		// Criar lista para armazenar os tiros
 		List<IPosition> shots = new ArrayList<>();
-
 		Scanner inputScanner = new Scanner(input);
 		while (shots.size() < NUMBER_SHOTS && inputScanner.hasNext()) {
-			// Lê a próxima parte e constrói uma posição
 			String token = inputScanner.next();
-
 			if (token.matches("[A-Za-z]")) {
-				// Caso seja somente uma coluna ("A", "B", etc.), esperar o próximo número
 				if (inputScanner.hasNextInt()) {
 					int row = inputScanner.nextInt();
 					shots.add(new Position(token.toUpperCase().charAt(0), row));
@@ -348,7 +352,6 @@ public class Game implements IGame
 					throw new IllegalArgumentException("Posição incompleta! A coluna '" + token + "' não é seguida por uma linha.");
 				}
 			} else {
-				// Caso o token já contenha a coluna e a linha juntas (ex.: "A3")
 				Scanner singleScanner = new Scanner(token);
 				shots.add(Tasks.readClassicPosition(singleScanner));
 			}
@@ -359,7 +362,6 @@ public class Game implements IGame
 		}
 
 		this.firePlayerShots(shots);
-
 		return Game.jsonShots(shots);
 	}
 
@@ -434,55 +436,42 @@ public class Game implements IGame
 	 *         valid, repeated, a hit, and whether a ship was sunk.
 	 */
 	public ShotResult fireSingleShot(IPosition pos, boolean isRepeated) {
-
 		assert pos != null;
-
 		if (!pos.isInside()) {
-			countInvalidShots++;
 			return new ShotResult(false, false, null, false);
 		}
-
 		if (isRepeated || repeatedShot(pos)) {
-			countRepeatedShots++;
 			return new ShotResult(true, true, null, false);
 		}
-
 		IShip ship = myFleet.shipAt(pos);
 		if (ship == null)
 			return new ShotResult(true, false, null, false);
-		else
-		{
-			ship.shoot(pos); //atualiza apenas a posição relacionada ao barco
-			pos.shoot(); //atualizar hit na posição do tiro também- para o JSON
-			countHits++;
-			if (!ship.stillFloating()) {
-				countSinks++;
-			}
+		else {
+			ship.shoot(pos);
+			pos.shoot();
 			return new ShotResult(true, false, ship, !ship.stillFloating());
 		}
 	}
 
+	/**
+	 * Disparo único do jogador contra a frota inimiga (alienFleet).
+	 */
 	public ShotResult firePlayerSingleShot(IPosition pos, boolean isRepeated) {
-
 		assert pos != null;
-
 		if (!pos.isInside()) {
 			countInvalidShots++;
 			return new ShotResult(false, false, null, false);
 		}
-
-		if (isRepeated || repeatedShot(pos)) {
+		if (isRepeated || playerRepeatedShots(pos)) {
 			countRepeatedShots++;
 			return new ShotResult(true, true, null, false);
 		}
-
 		IShip ship = alienFleet.shipAt(pos);
 		if (ship == null)
 			return new ShotResult(true, false, null, false);
-		else
-		{
-			ship.shoot(pos); //atualiza apenas a posição relacionada ao barco
-			pos.shoot(); //atualizar hit na posição do tiro também- para o JSON
+		else {
+			ship.shoot(pos);
+			pos.shoot();
 			countHits++;
 			if (!ship.stillFloating()) {
 				countSinks++;

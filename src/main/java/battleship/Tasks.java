@@ -166,7 +166,7 @@ public class Tasks {
 
 				case TUI:
 					if (game != null) {
-						BoardTUI tui = new BoardTUI((Game) game, current, historyWriter);
+						BoardTUI tui = new BoardTUI((Game) game, current, historyWriter, ai);
 						tui.start();
 					} else
 						System.out.println("Ainda não iniciou nenhum jogo.");
@@ -348,38 +348,47 @@ public class Tasks {
 	 * @return resultado da nova rajada da IA
 	 */
 	private static String executeTurns(IGame game, AIPlayer ai, Scanner in, String lastAiResult, StopWatch timer) {
-		timer.stop();
-		game.setLastTime(timer.getTime());
-		timer.reset();
-
-		int shipsBefore = game.getRemainingShips();
+		int enemyShipsBefore = game.getAlienFleet().getFloatingShips().size();
 		int hitsBefore = game.getHits();
 
 		System.out.println("Introduz as 3 coordenadas da tua rajada:");
 		game.readPlayerFire(in);
 
-		System.out.println("IA a processar...");
-		String aiShotsJson = ai.nextShot(lastAiResult);
-
-		if (aiShotsJson != null) {
-			List<IPosition> aiShots = parseAiShots(aiShotsJson);
-			game.fireShots(aiShots);
-		} else {
-			game.randomEnemyFire();
+		if (timer.isStarted()) {
+			timer.stop();
 		}
+		game.setLastTime(timer.getTime());
+		timer.reset();
 
-		IMove lastMove = game.getAlienMoves().getLast();
-		String newAiReport = lastMove.processEnemyFire(false);
-
-		int shipsAfter = game.getRemainingShips();
+		int enemyShipsAfter = game.getAlienFleet().getFloatingShips().size();
 		int hitsAfter = game.getHits();
-		SoundManager.play(decideSoundToPlay(shipsBefore, shipsAfter, hitsBefore, hitsAfter));
+
+		SoundManager.play(decideSoundToPlay(enemyShipsBefore, enemyShipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
+
+		String newAiReport = lastAiResult;
+		if (!checkPlayerWon(game)) {
+			System.out.println("IA a processar...");
+			String aiShotsJson = ai.nextShot(lastAiResult);
+			if (aiShotsJson != null) {
+				try {
+					List<IPosition> aiShots = parseAiShots(aiShotsJson);
+					game.fireShots(aiShots);
+				} catch (Exception e) {
+					game.randomEnemyFire();
+				}
+			} else {
+				game.randomEnemyFire();
+			}
+			IMove lastMove = game.getAlienMoves().getLast();
+			newAiReport = lastMove.processEnemyFire(false);
+		}
 
 		System.out.println("\n--- O MEU TABULEIRO ---");
 		game.printMyBoard(true, true);
-
 		System.out.println("\n--- TABULEIRO INIMIGO ---");
 		game.printAlienBoard(true, true);
+
+		System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
 
 		timer.start();
 		return newAiReport;
@@ -390,12 +399,12 @@ public class Tasks {
 	 * @param jsonShots coordenadas geradas pela IA
 	 * @return lista de IPositions
 	 */
-	private static List<IPosition> parseAiShots(String jsonShots) {
+	public static List<IPosition> parseAiShots(String jsonShots) {
 		List<IPosition> shots = new ArrayList<>();
 		try {
+			String cleanJson = jsonShots.replace("```json", "").replace("```", "").trim();
 			com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-			com.fasterxml.jackson.databind.JsonNode rootNode = mapper.readTree(jsonShots);
-
+			com.fasterxml.jackson.databind.JsonNode rootNode = mapper.readTree(cleanJson);
 			for (com.fasterxml.jackson.databind.JsonNode node : rootNode) {
 				char charRow = node.get("row").asText().toUpperCase().charAt(0);
 				int row = charRow - 'A';
@@ -403,8 +412,8 @@ public class Tasks {
 				shots.add(new Position(row, col));
 			}
 		} catch (Exception e) {
-			System.err.println("Erro ao ler o JSOn da IA: " + e.getMessage());
-			throw  new RuntimeException("Formato inválido devolvido pela IA.");
+			System.err.println("Erro ao ler o JSON da IA: " + e.getMessage());
+			throw new RuntimeException("Formato inválido devolvido pela IA.");
 		}
 		return shots;
 	}
