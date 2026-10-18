@@ -1,2 +1,5 @@
 /target/
 historico_jogos.json
+relatorio_jogadas.pdf
+scoreboard.csv
+.env

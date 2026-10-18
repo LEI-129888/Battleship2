@@ -1,5 +1,6 @@
 package battleship;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -59,6 +60,8 @@ public class Tasks {
 		StopWatch timer = new StopWatch();
 		GameHistoryWriter historyWriter = new GameHistoryWriter(); //para escrever o historico
 		GameRecord current = null; //guardar este jogo
+		AIPlayer ai = new AIPlayer();
+		String lastAiResult = "";
 		menuHelp();
 
 		System.out.print("> ");
@@ -91,67 +94,105 @@ public class Tasks {
 					break;
 				case RAJADA:
 					if (game != null) {
-						timer.stop();
-						System.out.println("Tempo da jogada: "+ timer.getTime()/1000.0 + "s");
-						game.setLastTime(timer.getTime());
-						timer.reset();
-						int shipsBefore = game.getRemainingShips();
-						int hitsBefore = game.getHits();
+						lastAiResult = executeTurns(game, ai, in, lastAiResult, timer);
 
-						game.readEnemyFire(in);
-
-						int shipsAfter = game.getRemainingShips();
-						int hitsAfter = game.getHits();
-
-						SoundManager.play(decideSoundToPlay(shipsBefore, shipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
-
-						myFleet.printStatus();
-						game.printMyBoard(true, false);
-
-						if (game.getRemainingShips() == 0) {
-							if (current != null) { //gravar no historico antes de terminar o jogo
-								current.setOutcome("DERROTA");
-								for (IMove move : game.getAlienMoves()) current.addMove(move); //copia todas as jogadas feitas para a gravação do jogo
-
-								historyWriter.saveGame(current);
-							}
-
-							game.over();
-							System.exit(0);
+						if (game.getRemainingShips() == 0 || checkPlayerWon(game)) {
+							endGame(game, historyWriter, current);
 						}
-						else
-							// Timer só é reiniciado quando o jogo ainda não acabou
-							timer.start();
+					} else {
+						System.out.println("Ainda não iniciou nenhum jogo.");
 					}
 					break;
 				case SIMULA:
 					if (game != null) {
-						while (game.getRemainingShips() > 0){
-							game.randomEnemyFire();
-							myFleet.printStatus();
+						AIPlayer playerAi = new AIPlayer();
+						String lastPlayerAiResult = "";
+
+						while (game.getRemainingShips() > 0 && !checkPlayerWon(game)) {
+							StopWatch turnTimer = new StopWatch();
+							turnTimer.start();
+
+							int enemyShipsBefore = game.getAlienFleet().getFloatingShips().size();
+							int hitsBefore = game.getHits();
+
+							System.out.println("\n[SIMULAÇÃO] IA do Jogador a processar...");
+							String playerAiShotsJson = playerAi.nextShot(lastPlayerAiResult);
+							if (playerAiShotsJson != null) {
+								try {
+									List<IPosition> playerShots = parseAiShots(playerAiShotsJson);
+									game.firePlayerShots(playerShots);
+								} catch (Exception e) {
+									game.randomPlayerFire();
+								}
+							} else {
+								game.randomPlayerFire();
+							}
+
+							turnTimer.stop();
+							game.setLastTime(turnTimer.getTime());
+
+							IMove lastPlayerMove = game.getMyMoves().getLast();
+							lastPlayerAiResult = lastPlayerMove.processEnemyFire(false);
+
+							int enemyShipsAfter = game.getAlienFleet().getFloatingShips().size();
+							int hitsAfter = game.getHits();
+							SoundManager.play(decideSoundToPlay(enemyShipsBefore, enemyShipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
+
+							if (checkPlayerWon(game)) {
+								System.out.println("\n--- O MEU TABULEIRO ---");
+								game.printMyBoard(true, false);
+								System.out.println("\n--- TABULEIRO INIMIGO ---");
+								game.printAlienBoard(true, false);
+								System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
+								endGame(game, historyWriter, current);
+								break;
+							}
+
+							System.out.println("\n[SIMULAÇÃO] IA Inimiga a processar...");
+							String enemyAiShotsJson = ai.nextShot(lastAiResult);
+							if (enemyAiShotsJson != null) {
+								try {
+									List<IPosition> enemyShots = parseAiShots(enemyAiShotsJson);
+									game.fireShots(enemyShots);
+								} catch (Exception e) {
+									game.randomEnemyFire();
+								}
+							} else {
+								game.randomEnemyFire();
+							}
+
+							IMove lastEnemyMove = game.getAlienMoves().getLast();
+							lastAiResult = lastEnemyMove.processEnemyFire(false);
+
+							System.out.println("\n--- O MEU TABULEIRO ---");
 							game.printMyBoard(true, false);
+							System.out.println("\n--- TABULEIRO INIMIGO ---");
+							game.printAlienBoard(true, false);
+							System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
+
+							if (game.getRemainingShips() == 0 || checkPlayerWon(game)) {
+								endGame(game, historyWriter, current);
+								break;
+							}
+
 							try {
 								Thread.sleep(3000);
 							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt(); // Best practice: restore interrupt status
+								Thread.currentThread().interrupt();
+								break;
 							}
 						}
-
-						if (game.getRemainingShips() == 0) {
-							if (current != null) { //gravar no histórico- VERIFICAR SE QUEREMOS GUARDAR UMA SIMULAÇÃO NO HISTORICO
-								current.setOutcome("DERROTA");
-								for (IMove move : game.getAlienMoves()) current.addMove(move);
-
-								historyWriter.saveGame(current);
-							}
-							game.over();
-							System.exit(0);
-						}
+					} else {
+						System.out.println("Ainda não iniciou nenhum jogo.");
 					}
 					break;
 				case TIROS:
-					if (game != null)
+					if (game != null) {
+						System.out.println("\n--- O MEU TABULEIRO ---");
 						game.printMyBoard(true, true);
+						System.out.println("\n--- TABULEIRO INIMIGO ---");
+						game.printAlienBoard(true, true);
+					}
 					break;
                 case AJUDA:
                     menuHelp();
@@ -171,23 +212,25 @@ public class Tasks {
 					break;
 				case PDF:
 					if (game != null) {
-						PdfExporter.exportMovesToPdf(game.getAlienMoves(), "relatorio_jogadas.pdf");
+						List<IMove> movesToExport = !game.getMyMoves().isEmpty() ? game.getMyMoves() : game.getAlienMoves();
+						PdfExporter.exportMovesToPdf(movesToExport, "relatorio_jogadas.pdf");
 					} else {
 						System.out.println("Ainda nao iniciou nenhum jogo!");
 					}
 					break;
 
 				case SCOREBOARD:
-					if (game != null && !game.getAlienMoves().isEmpty()) {
-						// Guarda o estado atual da partida para poderes ver logo na tabela
-						ScoreBoardManager.saveScore("Jogador", game.getAlienMoves().size(), game.getHits(), game.getRemainingShips() == 0);
+					if (game != null && (!game.getMyMoves().isEmpty() || !game.getAlienMoves().isEmpty())) {
+						int totalMoves = !game.getMyMoves().isEmpty() ? game.getMyMoves().size() : game.getAlienMoves().size();
+						boolean playerWon = checkPlayerWon(game) && game.getRemainingShips() > 0;
+						ScoreBoardManager.saveScore("Jogador", totalMoves, game.getHits(), playerWon);
 					}
 					ScoreBoardManager.printScoreboard();
 					break;
 
 				case TUI:
 					if (game != null) {
-						BoardTUI tui = new BoardTUI((Game) game, current, historyWriter);
+						BoardTUI tui = new BoardTUI((Game) game, current, historyWriter, ai);
 						tui.start();
 					} else
 						System.out.println("Ainda não iniciou nenhum jogo.");
@@ -211,13 +254,19 @@ public class Tasks {
 			System.out.print("> ");
 			command = in.next();
 		}
-		if (current != null) { //guardar no histórico antes da desistencia, se o jogo já tiver começado
+
+		if (current != null && current.getOutcome() == null) {
 			current.setOutcome("DESISTÊNCIA");
-			if(game != null) {
-				for (IMove move : game.getAlienMoves())
-					current.addMove(move); //copia as jogadas da partida para a sessão
+			if (game != null) {
+				List<IMove> movesToSave = !game.getMyMoves().isEmpty() ? game.getMyMoves() : game.getAlienMoves();
+				for (IMove move : movesToSave) {
+					current.addMove(move);
+				}
 			}
-			historyWriter.saveGame(current); //salvar a sessão no ficheiro
+			historyWriter.saveGame(current);
+		}
+		if (timer.isStarted()) {
+			timer.stop();
 		}
 		// Quando desiste simplesmente para o timer
 		if (timer.isStarted()) timer.stop(); //apanhamos exceção
@@ -347,7 +396,7 @@ public class Tasks {
 	 * Decides which sound should be played based on ships before and after the move and hits before and after the move
 	 * @param shipsBefore Number of ships remaining before the move
 	 * @param shipsAfter Number of ships remaining after the move
-	 * @param hitsBefore Number of total hits before before the move
+	 * @param hitsBefore Number of total hits before the move
 	 * @param hitsAfter Number of total hits after the move
 	 * @return String which represents the soundFileName at /src/java/resources
 	 */
@@ -357,6 +406,107 @@ public class Tasks {
 		else if (hitsAfter > hitsBefore)
 			return EXPLOSION;
 		else return SPLASH;
+	}
+
+	/**
+	 * Executa um turno, uma rajada do jogador e uma da IA
+	 * @param game jogo atual
+	 * @param ai agente que joga pelo adversário
+	 * @param in scanner do STDIN
+	 * @param lastAiResult json com o resultado da última rajada da IA
+	 * @param timer instancia de timer para contar o tempo das jogadas
+	 * @return resultado da nova rajada da IA
+	 */
+	private static String executeTurns(IGame game, AIPlayer ai, Scanner in, String lastAiResult, StopWatch timer) {
+		int enemyShipsBefore = game.getAlienFleet().getFloatingShips().size();
+		int hitsBefore = game.getHits();
+
+		game.readPlayerFire(in);
+
+		if (timer.isStarted()) {
+			timer.stop();
+		}
+		game.setLastTime(timer.getTime());
+		timer.reset();
+
+		int enemyShipsAfter = game.getAlienFleet().getFloatingShips().size();
+		int hitsAfter = game.getHits();
+
+		SoundManager.play(decideSoundToPlay(enemyShipsBefore, enemyShipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
+
+		String newAiReport = lastAiResult;
+		if (!checkPlayerWon(game)) {
+			System.out.println("IA a processar...");
+			String aiShotsJson = ai.nextShot(lastAiResult);
+			if (aiShotsJson != null) {
+				try {
+					List<IPosition> aiShots = parseAiShots(aiShotsJson);
+					game.fireShots(aiShots);
+				} catch (Exception e) {
+					game.randomEnemyFire();
+				}
+			} else {
+				game.randomEnemyFire();
+			}
+			IMove lastMove = game.getAlienMoves().getLast();
+			newAiReport = lastMove.processEnemyFire(false);
+		}
+
+		System.out.println("\n--- O MEU TABULEIRO ---");
+		game.printMyBoard(true, true);
+		System.out.println("\n--- TABULEIRO INIMIGO ---");
+		game.printAlienBoard(true, true);
+
+		System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
+
+		timer.start();
+		return newAiReport;
+	}
+
+	/**
+	 * Converte coordenadas em JSON geradas pela IA numa lista de IPositions.
+	 * @param jsonShots coordenadas geradas pela IA
+	 * @return lista de IPositions
+	 */
+	public static List<IPosition> parseAiShots(String jsonShots) {
+		List<IPosition> shots = new ArrayList<>();
+		try {
+			String cleanJson = jsonShots.replace("```json", "").replace("```", "").trim();
+			com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+			com.fasterxml.jackson.databind.JsonNode rootNode = mapper.readTree(cleanJson);
+			for (com.fasterxml.jackson.databind.JsonNode node : rootNode) {
+				char charRow = node.get("row").asText().toUpperCase().charAt(0);
+				int row = charRow - 'A';
+				int col = node.get("column").asInt() - 1;
+				shots.add(new Position(row, col));
+			}
+		} catch (Exception e) {
+			System.err.println("Erro ao ler o JSON da IA: " + e.getMessage());
+			throw new RuntimeException("Formato inválido devolvido pela IA.");
+		}
+		return shots;
+	}
+
+	private static void endGame(IGame game, GameHistoryWriter historyWriter, GameRecord current) {
+		if (current != null && current.getOutcome() == null) {
+			current.setOutcome(game.getRemainingShips() == 0 ? "DERROTA" : "VITÓRIA");
+			List<IMove> movesToSave = !game.getMyMoves().isEmpty() ? game.getMyMoves() : game.getAlienMoves();
+			for (IMove move : movesToSave) {
+				current.addMove(move);
+			}
+			historyWriter.saveGame(current);
+		}
+		game.over();
+		System.exit(0);
+	}
+
+	/**
+	 * Verifica se o jogador afundou toda a frota do oponente
+	 * @param game estado do jogo a verificasr
+	 * @return true se afundou, false se não
+	 */
+	private static boolean checkPlayerWon(IGame game) {
+		return game.getAlienFleet().getFloatingShips().isEmpty();
 	}
 
 }

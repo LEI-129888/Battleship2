@@ -50,7 +50,7 @@ public class GameTest {
 		assertEquals(0, game.getSunkShips(), "Sunk ships count should be zero upon initialization.");
 	}
 
-	@Test
+	/*@Test
 	void fire2() {
 		Position invalidPosition = new Position(-1, 5);
 		game.fireSingleShot(invalidPosition, false);
@@ -62,6 +62,19 @@ public class GameTest {
 		Position position = new Position(2, 3);
 		game.fireSingleShot(position, false);
 		game.fireSingleShot(position, true);
+		assertEquals(1, game.getRepeatedShots(), "Repeated shots counter should increase for a repeated shot.");
+	}*/
+	@Test
+	void fire2() {
+		List<IPosition> shots = List.of(new Position(-1, 5), new Position(0, 0), new Position(0, 1));
+		game.fireShots(shots);
+		assertEquals(1, game.getInvalidShots(), "Invalid shots counter should increase for an invalid shot.");
+	}
+
+	@Test
+	void fire3() {
+		List<IPosition> shots = List.of(new Position(2, 3), new Position(2, 3), new Position(0, 1));
+		game.fireShots(shots);
 		assertEquals(1, game.getRepeatedShots(), "Repeated shots counter should increase for a repeated shot.");
 	}
 
