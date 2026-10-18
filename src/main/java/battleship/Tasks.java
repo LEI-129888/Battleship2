@@ -220,7 +220,7 @@ public class Tasks {
 			historyWriter.saveGame(current); //salvar a sessão no ficheiro
 		}
 		// Quando desiste simplesmente para o timer
-		timer.stop();
+		if (timer.isStarted()) timer.stop(); //apanhamos exceção
 		System.out.println(GOODBYE_MESSAGE);
 	}
 
