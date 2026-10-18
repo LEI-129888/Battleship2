@@ -268,6 +268,8 @@ public class Tasks {
 		if (timer.isStarted()) {
 			timer.stop();
 		}
+		// Quando desiste simplesmente para o timer
+		if (timer.isStarted()) timer.stop(); //apanhamos exceção
 		System.out.println(GOODBYE_MESSAGE);
 	}
 
