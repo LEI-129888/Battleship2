@@ -220,6 +220,5 @@ public class Move implements IMove {
 		// Retornar o JSON
 		return jsonString;
 	}
-	//classe criada para testar 
-	public void testeMuitosParametros(int a, int b, int c, int d, int e, int f) {}
+
 }
