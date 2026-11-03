@@ -388,18 +388,21 @@ public class Game implements IGame
 
 		List<IPosition> alreadyShot = new ArrayList<IPosition>();
 		for (IPosition pos : shots) {
-			shotResults.add(fireSingleShot(pos, alreadyShot.contains(pos)));
+			ShotResult result = fireSingleShot(pos, alreadyShot.contains(pos)); //tentativa de resolução dos testes do Maven
+			shotResults.add(result);
 			alreadyShot.add(pos);
+
+			//atualização correta dos contadores
+			if(result.repeated())
+				this.countRepeatedShots++;
+			if (!result.valid())
+				this.countInvalidShots++;
 		}
 
 		Move move = new Move(moveNumber, shots, shotResults);
-
 //		System.out.println(move);
-
 		move.processEnemyFire(true);
-
 		alienMoves.add(move);
-
 		moveNumber++;
 	}
 
