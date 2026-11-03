@@ -92,7 +92,6 @@ public abstract class Ship implements IShip
 	/**
 	 * The size
 	 */
-	private Integer size;
 
 	/**
 	 * The Positions occupied by the ship.
