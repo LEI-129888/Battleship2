@@ -3,7 +3,7 @@ profile:
   base:
     name: empty
   inspections:
-    - inspection: OverlyComplexClass
+    - inspection: MethodCount
       enabled: true
       options:
         m_limit: 47
