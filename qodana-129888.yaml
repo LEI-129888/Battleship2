@@ -1,0 +1,9 @@
+# 129888 Rúebn Alexandre Pedreira carvalho
+version: "1.0"
+linter: jetbrains/qodana-jvm-community:2026.2
+projectJDK: 17
+profile:
+  path: .qodana/profiles/profile-129888.yaml
+failureConditions:
+  severityThresholds:
+    any: 0
