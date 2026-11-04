@@ -1,6 +1,9 @@
+#129865 Alexandra Cardoso
 profile:
   base:
     name: empty
   inspections:
-    - inspection: MethodWithTooManyParameters
+    - inspection: ClassWithTooManyMethods
       enabled: true
+      options:
+        limit: 47
