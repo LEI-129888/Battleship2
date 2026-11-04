@@ -3,7 +3,7 @@ profile:
   base:
     name: empty
   inspections:
-    - inspection: ClassWithTooManyMethods
+    - inspection: MethodWithTooManyParameters
       enabled: true
       options:
-        m_limit: 47
+        limit: 5
