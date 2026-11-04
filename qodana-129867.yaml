@@ -1,11 +1,11 @@
 #129867 - Joana Cardoso
 version: "1.0"
 linter: jetbrains/qodana-jvm-community:2026.2
-projectJDK: "23"
-profile:
-  path: qodana/profiles/profile-129867.yaml
+projectJDK: 21
 properties:
   project.open.type: Maven
+profile:
+  path: qodana/profiles/profile-129867.yaml
 failureConditions:
   severityThresholds:
     any: 0
