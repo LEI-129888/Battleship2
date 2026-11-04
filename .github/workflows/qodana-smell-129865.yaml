@@ -23,5 +23,3 @@ jobs:
           args: --config qodana-129865.yaml
           use-annotations: true
           post-pr-comment: true
-        env:
-          QODANA_ENV: "-Dproject.open.type=Maven"
