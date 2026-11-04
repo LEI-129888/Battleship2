@@ -1,7 +1,7 @@
 #129867 - Joana Cardoso
 version: "1.0"
-linter: jetbrains/qodana-jvm-community
-projectJDK: 21
+linter: jetbrains/qodana-jvm-community:2025.1
+projectJDK: "23"
 profile:
   path: qodana/profiles/profile-129867.yaml
 failureConditions:
