@@ -17,6 +17,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+      - name: Debug - Listar ficheiros
+        run: ls -la
       - uses: JetBrains/qodana-action@v2026.2
         with:
           args: --config qodana-129888.yaml
