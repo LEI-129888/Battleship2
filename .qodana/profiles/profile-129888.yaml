@@ -1,0 +1,8 @@
+# 129888 Rúben Alexandre Pedreira carvalho
+name: profile-129888
+base: empty
+inspections:
+  - inspection: NonCommentSourceStatements
+    enabled: true
+    options:
+      m_limit: 16
