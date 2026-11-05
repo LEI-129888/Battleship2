@@ -2,7 +2,7 @@
 name: profile-129865
 base: empty
 inspections:
-  - inspection: ClassWithTooManyMethods
+  - inspection: OverlyComplexClass
     enabled: true
     options:
-      m_limit: 47
+      m_limit: 40
