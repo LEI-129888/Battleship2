@@ -1,9 +1,8 @@
 #129865 Alexandra Cardoso
-profile:
-  base:
-    name: empty
-  inspections:
-    - inspection: ClassWithTooManyMethods
-      enabled: true
-      options:
-        limit: 47
+name: profile-129865
+base: empty
+inspections:
+  - inspection: ClassWithTooManyMethods
+    enabled: true
+    options:
+      limit: 47
