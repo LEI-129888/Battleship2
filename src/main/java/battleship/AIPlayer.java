@@ -75,6 +75,7 @@ public class AIPlayer {
      * @return JSON com a nova rajada da IA
      */
     public String nextShot(String lastShotResult) {
+        testeLongMethod(); // Long method test
         if (lastShotResult == null || lastShotResult.isEmpty()) {
             chatMemory.add(UserMessage.userMessage("O jogo começou. Envia a tua primeira rajada."));
         } else {
