@@ -92,4 +92,31 @@ public class AIPlayer {
         }
     }
 
+    private void testeLongMethod() {
+        System.out.print(1);
+        System.out.print(2);
+        System.out.print(3);
+        System.out.print(4);
+        System.out.print(5);
+        System.out.print(6);
+        System.out.print(7);
+        System.out.print(8);
+        System.out.print(9);
+        System.out.print(10);
+        System.out.print(11);
+        System.out.print(12);
+        System.out.print(13);
+        System.out.print(14);
+        System.out.print(15);
+        System.out.print(16);
+        System.out.print(17);
+        System.out.print(18);
+        System.out.print(19);
+        System.out.print(20);
+        System.out.print(21);
+        System.out.print(22);
+        System.out.print(23);
+        System.out.print(24);
+    }
+
 }
