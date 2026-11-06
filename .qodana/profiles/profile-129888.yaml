@@ -6,3 +6,7 @@ inspections:
     enabled: true
     options:
       m_limit: 16
+  - inspection: CyclomaticComplexity
+    enabled: true
+    options:
+      m_limit: 10
