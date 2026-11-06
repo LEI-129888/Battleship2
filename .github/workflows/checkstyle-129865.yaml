@@ -9,9 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Checkstyle
-        uses: reviewdog/action-checkstyle@v1
+        uses: dbelyaev/action-checkstyle@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check
           checkstyle_config: checkstyle-129865.xml
-          fail_on_error: true
+          level: error
+          fail_level: error
