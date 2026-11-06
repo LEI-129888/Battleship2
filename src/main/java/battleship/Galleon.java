@@ -22,16 +22,16 @@ public class Galleon extends Ship {
 
 		switch (bearing) {
 			case NORTH:
-				FILLNORTH(pos);
+				fillNorth(pos);
 				break;
 			case EAST:
-				FILLEAST(pos);
+				fillEast(pos);
 				break;
 			case SOUTH:
-				FILLSOUTH(pos);
+				fillSouth(pos);
 				break;
 			case WEST:
-				FILLWEST(pos);
+				fillWest(pos);
 				break;
 		}
 	}
@@ -41,7 +41,7 @@ public class Galleon extends Ship {
 	 *
 	 * @param pos The initial position of the ship.
 	 */
-	private void FILLNORTH(IPosition pos) {
+	private void fillNorth(IPosition pos) {
 		for (int i = 0; i < 3; i++) {
 			getPositions().add(new Position(pos.getRow(), pos.getColumn() + i));
 		}
@@ -54,7 +54,7 @@ public class Galleon extends Ship {
 	 *
 	 * @param pos The initial position of the ship.
 	 */
-	private void FILLSOUTH(IPosition pos) {
+	private void fillSouth(IPosition pos) {
 		for (int i = 0; i < 2; i++) {
 			getPositions().add(new Position(pos.getRow() + i, pos.getColumn()));
 		}
@@ -68,7 +68,7 @@ public class Galleon extends Ship {
 	 *
 	 * @param pos The initial position of the ship.
 	 */
-	private void FILLEAST(IPosition pos) {
+	private void fillEast(IPosition pos) {
 		getPositions().add(new Position(pos.getRow(), pos.getColumn()));
 		for (int i = 1; i < 4; i++) {
 			getPositions().add(new Position(pos.getRow() + 1, pos.getColumn() + i - 3));
@@ -81,7 +81,7 @@ public class Galleon extends Ship {
 	 *
 	 * @param pos The initial position of the ship.
 	 */
-	private void FILLWEST(IPosition pos) {
+	private void fillWest(IPosition pos) {
 		getPositions().add(new Position(pos.getRow(), pos.getColumn()));
 		for (int i = 1; i < 4; i++) {
 			getPositions().add(new Position(pos.getRow() + 1, pos.getColumn() + i - 1));
