@@ -16,7 +16,7 @@ public abstract class Ship implements IShip
 	/**
 	 * The constant GALEAO.
 	 */
-	private static final String galeao = "galeao";
+	private static final String GALEAO = "galeao";
 	/**
 	 * The constant FRAGATA.
 	 */
@@ -63,7 +63,7 @@ public abstract class Ship implements IShip
         case FRAGATA:
             s = new Frigate(bearing, pos);
 			break;
-        case galeao:
+        case GALEAO:
             s = new Galleon(bearing, pos);
 			break;
         default:
