@@ -22,3 +22,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check
           checkstyle_config: checkstyle-129888.xml
+          filter_mode: nofilter
+          fail_on_error: true
