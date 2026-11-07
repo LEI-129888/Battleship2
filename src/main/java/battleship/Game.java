@@ -453,6 +453,11 @@ public class Game implements IGame
 		}
 	}
 
+	//code smell teste
+	public void metodoComCheiro(int p1, int p2, int p3, int p4, int p5, int p6) {
+		System.out.println("O Qodana vai detetar este método!");
+	}
+
 	/**
 	 * Disparo único do jogador contra a frota inimiga (alienFleet).
 	 */
