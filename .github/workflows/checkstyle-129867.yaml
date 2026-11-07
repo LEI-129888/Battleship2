@@ -20,6 +20,6 @@ jobs:
       - uses: dbelyaev/action-checkstyle@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-check
+          reporter: github-pr-annotations
           checkstyle_config: checkstyle-129867.xml
           fail_level: error
