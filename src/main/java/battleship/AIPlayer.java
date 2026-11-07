@@ -74,7 +74,7 @@ public class AIPlayer {
      * @param lastShotResult JSON com resultado da última rajada efetuada pela IA
      * @return JSON com a nova rajada da IA
      */
-    public String Next_Shot(String lastShotResult) {
+    public String nextShot(String lastShotResult) {
         if (lastShotResult == null || lastShotResult.isEmpty()) {
             chatMemory.add(UserMessage.userMessage("O jogo começou. Envia a tua primeira rajada."));
         } else {
