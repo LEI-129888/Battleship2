@@ -1,0 +1,18 @@
+name: Checkstyle ConstantName 129865
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkstyle
+        uses: dbelyaev/action-checkstyle@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-check
+          checkstyle_config: checkstyle-129865.xml
+          level: error
+          fail_level: error
