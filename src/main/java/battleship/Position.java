@@ -63,7 +63,7 @@ public class Position implements IPosition {
 	 * @param column the column coordinate of the position
 	 */
 	@JsonCreator
-	public Position(@JsonProperty("row") int Row, @JsonProperty("column") int column) {
+	public Position(@JsonProperty("row") int row, @JsonProperty("column") int column) {
 		this.row = row;
 		this.column = column;
 		this.isOccupied = false;
