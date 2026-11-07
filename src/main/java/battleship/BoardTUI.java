@@ -191,7 +191,7 @@ public class BoardTUI {
                 }
 
                 statusLabel.setText("IA a processar a resposta...");
-                String aiShotsJson = ai.nextShot(lastAiResult);
+                String aiShotsJson = ai.Next_Shot(lastAiResult);
                 if (aiShotsJson != null) {
                     try {
                         List<IPosition> aiShots = Tasks.parseAiShots(aiShotsJson);
@@ -236,7 +236,7 @@ public class BoardTUI {
             int enemyShipsBefore = game.getAlienFleet().getFloatingShips().size();
             int hitsBefore = game.getHits();
 
-            String playerAiShotsJson = playerAi.nextShot(lastPlayerAiResult);
+            String playerAiShotsJson = playerAi.Next_Shot(lastPlayerAiResult);
             if (playerAiShotsJson != null) {
                 try {
                     List<IPosition> playerShots = Tasks.parseAiShots(playerAiShotsJson);
@@ -270,7 +270,7 @@ public class BoardTUI {
             statusLabel.setText("Simulação: IA Inimiga a pensar...");
             try { gui.updateScreen(); } catch (IOException ignored) {}
 
-            String enemyAiShotsJson = ai.nextShot(lastAiResult);
+            String enemyAiShotsJson = ai.Next_Shot(lastAiResult);
             if (enemyAiShotsJson != null) {
                 try {
                     List<IPosition> enemyShots = Tasks.parseAiShots(enemyAiShotsJson);

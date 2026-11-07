@@ -116,7 +116,7 @@ public class Tasks {
 							int hitsBefore = game.getHits();
 
 							System.out.println("\n[SIMULAÇÃO] IA do Jogador a processar...");
-							String playerAiShotsJson = playerAi.nextShot(lastPlayerAiResult);
+							String playerAiShotsJson = playerAi.Next_Shot(lastPlayerAiResult);
 							if (playerAiShotsJson != null) {
 								try {
 									List<IPosition> playerShots = parseAiShots(playerAiShotsJson);
@@ -149,7 +149,7 @@ public class Tasks {
 							}
 
 							System.out.println("\n[SIMULAÇÃO] IA Inimiga a processar...");
-							String enemyAiShotsJson = ai.nextShot(lastAiResult);
+							String enemyAiShotsJson = ai.Next_Shot(lastAiResult);
 							if (enemyAiShotsJson != null) {
 								try {
 									List<IPosition> enemyShots = parseAiShots(enemyAiShotsJson);
@@ -437,7 +437,7 @@ public class Tasks {
 		String newAiReport = lastAiResult;
 		if (!checkPlayerWon(game)) {
 			System.out.println("IA a processar...");
-			String aiShotsJson = ai.nextShot(lastAiResult);
+			String aiShotsJson = ai.Next_Shot(lastAiResult);
 			if (aiShotsJson != null) {
 				try {
 					List<IPosition> aiShots = parseAiShots(aiShotsJson);
