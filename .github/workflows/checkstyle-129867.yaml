@@ -1,0 +1,20 @@
+#129867 - Joana Cardoso
+name: Checkstyle Parameter Name 129867
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkstyle
+        uses: dbelyaev/action-checkstyle@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-check
+          checkstyle_config: checkstyle-129867.xml
+          level: error
+          fail_level: error
