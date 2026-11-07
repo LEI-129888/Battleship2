@@ -220,4 +220,5 @@ public class Move implements IMove {
 		// Retornar o JSON
 		return jsonString;
 	}
+
 }
