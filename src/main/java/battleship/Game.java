@@ -452,7 +452,7 @@ public class Game implements IGame
 			return new ShotResult(true, false, ship, !ship.stillFloating());
 		}
 	}
-	
+
 	/**
 	 * Disparo único do jogador contra a frota inimiga (alienFleet).
 	 */
