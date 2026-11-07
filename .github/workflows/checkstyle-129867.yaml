@@ -4,22 +4,17 @@ on:
   pull_request:
   push:
     branches: [main]
-  workflow_dispatch:
-permissions:
-  contents: read
-  checks: write
-  pull-requests: write
+
 jobs:
   checkstyle:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-      - uses: dbelyaev/action-checkstyle@v1
+      - name: Checkstyle
+        uses: dbelyaev/action-checkstyle@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-annotations
+          reporter: github-pr-check
           checkstyle_config: checkstyle-129867.xml
+          level: error
           fail_level: error
