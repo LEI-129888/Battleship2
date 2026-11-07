@@ -1,7 +1,9 @@
 # 129867 -  Joana Cardoso
-name: empty
-inspections:
-  - inspection: MethodWithTooManyParameters
-    enabled: true
-    options:
-      limit: 5
+profile:
+  base:
+    name: empty
+  inspections:
+    - inspection: MethodWithTooManyParameters
+      enabled: true
+      options:
+        m_limit: 5
