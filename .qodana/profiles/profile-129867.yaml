@@ -1,8 +1,7 @@
 # 129867 - Joana Cardoso
-profile:
-  base:
-    name: empty
-  inspections:
+name: profile-129867
+base: empty
+inspections:
     - inspection: ParametersPerMethod
       enabled: true
       options:
