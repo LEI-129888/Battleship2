@@ -1,7 +1,8 @@
-# 129867 -  Joana Cardoso
-name: empty
+# 129867 - Joana Cardoso
+name: profile-129867
+base: empty
 inspections:
-  - inspection: MethodWithTooManyParameters
-    enabled: true
-    options:
-      limit: 5
+    - inspection: ParametersPerMethod
+      enabled: true
+      options:
+        m_limit: 5
