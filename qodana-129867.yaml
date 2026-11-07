@@ -5,7 +5,7 @@ projectJDK: 21
 properties:
   project.open.type: Maven
 profile:
-  path: qodana/profiles/profile-129867.yaml
+  path: .qodana/profiles/profile-129867.yaml
 failureConditions:
   severityThresholds:
     any: 0
