@@ -75,6 +75,7 @@ public class AIPlayer {
      * @return JSON com a nova rajada da IA
      */
     public String nextShot(String lastShotResult) {
+        testeLongMethod(); // Long method test
         if (lastShotResult == null || lastShotResult.isEmpty()) {
             chatMemory.add(UserMessage.userMessage("O jogo começou. Envia a tua primeira rajada."));
         } else {
@@ -90,6 +91,24 @@ public class AIPlayer {
             System.err.println("Falha na comunicação com a IA (" + e.getMessage() + ").");
             return  null;
         }
+    }
+
+    private void testeLongMethod() {
+        System.out.print(1);
+        System.out.print(2);
+        System.out.print(3);
+        System.out.print(4);
+        System.out.print(5);
+        System.out.print(6);
+        System.out.print(7);
+        System.out.print(8);
+        System.out.print(9);
+        System.out.print(10);
+        System.out.print(11);
+        System.out.print(12);
+        System.out.print(13);
+        System.out.print(14);
+        System.out.print(15);
     }
 
 }
