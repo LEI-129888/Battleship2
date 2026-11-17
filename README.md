@@ -96,7 +96,6 @@ public class Ship {
 ### Design Patterns Used:
 - **Strategy Pattern:** For different AI difficulty levels.
 - **Observer Pattern:** To update the UI when a ship is hit.
-</details>
 
 ### Logic Flow
 ```mermaid
@@ -127,6 +126,7 @@ We use high-coverage unit testing to ensure game stability. Run tests using:
 ```bash
 mvn test
 ```
+> **Integração Contínua (CI):** Este projeto utiliza o GitHub Actions (workflow "Java CI with Maven") para garantir a qualidade do código. A bateria de testes unitários é executada automaticamente a cada Push ou Pull Request. 
 
 > [!TIP]
 > Use the `-Dtest=ClassName` flag to run specific test suites during development.
