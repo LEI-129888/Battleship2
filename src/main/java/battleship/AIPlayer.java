@@ -54,7 +54,7 @@ public class AIPlayer {
     private final ChatMemory chatMemory;
 
     public AIPlayer() {
-        Dotenv dotenv = Dotenv.load();
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
         String apiKey = dotenv.get("GOOGLE_API");
 
