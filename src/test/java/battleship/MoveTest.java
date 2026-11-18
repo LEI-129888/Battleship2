@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * - getNumber(): 1
  * - getShots(): 1
  * - getShotResults(): 1
- * - processEnemyFire(boolean): 25 (including loops, compound predicates, and catch)
+ * - processEnemyFire(boolean): 38
  */
 class MoveTest {
 
@@ -368,6 +368,97 @@ class MoveTest {
         String text = output.toString(StandardCharsets.UTF_8);
         assertTrue(text.contains("-> " + Game.NUMBER_SHOTS + " tiros exteriores"),
                 "Error: expected empty results to render only the outside-shot count.");
+    }
+    @Test
+    @DisplayName("processEnemyFire verbose formata plurais de múltiplos barcos afundados/atingidos sem tiros na água")
+    void processEnemyFireVerbosePluraisESemAgua() throws Exception {
+        //Simula a situação onde a string "+ " no final tem de ser removida (porque missedShots == 0)
+        // e garante a passagem no "count > 1 ? s : "
+        IShip barca = ship("Barca");
+        IShip nau = ship("Nau");
+        move = new Move(10, List.of(), List.of(
+                new IGame.ShotResult(true, false, barca, true),
+                new IGame.ShotResult(true, false, barca, true),
+                new IGame.ShotResult(true, false, nau, false),
+                new IGame.ShotResult(true, false, nau, false)
+        ));
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream originalOutput = System.out;
+        try (PrintStream capturedOutput = new PrintStream(output, true, StandardCharsets.UTF_8)) {
+            System.setOut(capturedOutput);
+            move.processEnemyFire(true);
+        } finally {
+            System.setOut(originalOutput);
+        }
+
+        String text = output.toString(StandardCharsets.UTF_8);
+        assertAll(
+                () -> assertTrue(text.contains("2 Barcas ao fundo"),
+                        "Error: expected verbose output to correctly pluralize multiple sunk boats of the same type."),
+                () -> assertTrue(text.contains("2 tiros num(a) Nau"),
+                        "Error: expected verbose output to correctly pluralize multiple hits on the same type of boat."),
+                () -> assertFalse(text.contains("+ \r\n") || text.contains("+ \n"),
+                        "Error: expected the trailing '+ ' to be removed when there are no missed shots, leaving a clean line break.")
+        );
+    }
+
+    @Test
+    @DisplayName("processEnemyFire verbose formata vários tiros repetidos no plural e 1 tiro exterior no singular")
+    void processEnemyFireVerboseVariosRepetidosEUmExterior() {
+        // 0 válidos, 2 repetidos -> sobra 1 tiro exterior (assumindo NUMBER_SHOTS = 3)
+        move = new Move(11, List.of(), List.of(
+                new IGame.ShotResult(true, true, null, false),
+                new IGame.ShotResult(true, true, null, false)
+        ));
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream originalOutput = System.out;
+        try (PrintStream capturedOutput = new PrintStream(output, true, StandardCharsets.UTF_8)) {
+            System.setOut(capturedOutput);
+            move.processEnemyFire(true);
+        } finally {
+            System.setOut(originalOutput);
+        }
+
+        String text = output.toString(StandardCharsets.UTF_8);
+        assertAll(
+                () -> assertTrue(text.contains("2 tiros repetidos"),
+                        "Error: expected multiple repeated shots to use plural wording."),
+                () -> assertTrue(text.contains("1 tiro exterior"),
+                        "Error: expected a single outside shot to use singular wording.")
+        );
+    }
+
+    @Test
+    @DisplayName("processEnemyFire verbose formata 1 tiro válido num barco sem afundar e vários repetidos")
+    void processEnemyFireVerboseUmValidoSemAfundarEVariosRepetidos() {
+        // 1 válido (acerto sem afundar, 0 água, 0 afundados) + 2 repetidos
+        IShip hitShip = ship("Galeão");
+        move = new Move(12, List.of(), List.of(
+                new IGame.ShotResult(true, false, hitShip, false),
+                new IGame.ShotResult(true, true, null, false),
+                new IGame.ShotResult(true, true, null, false)
+        ));
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream originalOutput = System.out;
+        try (PrintStream capturedOutput = new PrintStream(output, true, StandardCharsets.UTF_8)) {
+            System.setOut(capturedOutput);
+            move.processEnemyFire(true);
+        } finally {
+            System.setOut(originalOutput);
+        }
+
+        String text = output.toString(StandardCharsets.UTF_8);
+        assertAll(
+                () -> assertTrue(text.contains("1 tiro válido"),
+                        "Error: expected a single valid shot to use singular wording."),
+                () -> assertTrue(text.contains("1 tiro num(a) Galeão"),
+                        "Error: expected hit on non-sunk ship to be printed."),
+                () -> assertTrue(text.contains(", 2 tiros repetidos"),
+                        "Error: expected multiple repeated shots after valid shots to use plural wording.")
+        );
     }
 
     private static JsonNode json(String text) throws Exception {
