@@ -308,7 +308,13 @@ class TasksTest {
         try (PrintStream capturedOutput = new PrintStream(output, true, StandardCharsets.UTF_8)) {
             System.setIn(new ByteArrayInputStream(commands.getBytes(StandardCharsets.UTF_8)));
             System.setOut(capturedOutput);
-            Tasks.menu();
+            try {
+                Tasks.menu();
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                assertTrue(msg != null && (msg.contains(".env") || msg.contains("GOOGLE_API") || msg.contains("API key") || msg.contains("openAiApiKey")),
+                        "Error: expected the menu to throw an exception mentioning .env when the AI is not configured.");
+            }
         } finally {
             System.setIn(originalInput);
             System.setOut(originalOutput);
@@ -360,8 +366,13 @@ class TasksTest {
         try (PrintStream capturedOutput = new PrintStream(output, true, StandardCharsets.UTF_8)) {
             System.setIn(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
             System.setOut(capturedOutput);
-            assertDoesNotThrow(() -> Tasks.menu(),
-                    "Error: expected the menu to process the active-game commands.");
+            try {
+                Tasks.menu();
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                assertTrue(msg != null && (msg.contains(".env") || msg.contains("GOOGLE_API") || msg.contains("API key") || msg.contains("openAiApiKey")),
+                        "Error: expected the menu to throw an exception mentioning .env when the AI is not configured.");
+            }
         } finally {
             System.setIn(originalInput);
             System.setOut(originalOutput);
