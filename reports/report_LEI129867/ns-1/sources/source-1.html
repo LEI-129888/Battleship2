@@ -1,0 +1,211 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AIPlayer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">battleship</a>
+</div>
+
+<h1>Coverage Summary for Class: AIPlayer (battleship)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AIPlayer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (20/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package battleship;
+&nbsp;
+&nbsp;import io.github.cdimascio.dotenv.Dotenv;
+&nbsp;
+&nbsp;import dev.langchain4j.model.chat.ChatLanguageModel;
+&nbsp;import dev.langchain4j.model.openai.OpenAiChatModel;
+&nbsp;import dev.langchain4j.memory.ChatMemory;
+&nbsp;import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+&nbsp;import dev.langchain4j.data.message.AiMessage;
+&nbsp;import dev.langchain4j.data.message.SystemMessage;
+&nbsp;import dev.langchain4j.data.message.UserMessage;
+&nbsp;import dev.langchain4j.model.output.Response;
+&nbsp;
+&nbsp;public class AIPlayer {
+&nbsp;    // Constants
+&nbsp;    private static final String BASEURL = &quot;https://generativelanguage.googleapis.com/v1beta/openai/&quot;;
+&nbsp;    private static final String MODELNAME = &quot;gemini-3.5-flash-lite&quot;;
+&nbsp;    private static final double TEMPERATURE = 0.2;
+&nbsp;    private static final String SYSPROMPT = &quot;&quot;&quot;
+&nbsp;            És um perito no jogo da Batalha Naval (versão Descobrimentos Portugueses). O jogo decorre num tabuleiro com linhas de A a J e colunas de 1 a 10.
+&nbsp;            
+&nbsp;            A tua frota oculta (que não deves revelar) tem 11 navios:
+&nbsp;            
+&nbsp;            * 4 Barcas (1 posição)
+&nbsp;            * 3 Caravelas (2 posições)
+&nbsp;            * 2 Naus (3 posições)
+&nbsp;            * 1 Fragata (4 posições)
+&nbsp;            * 1 Galeão (5 posições em forma de T)
+&nbsp;            Os navios não se podem tocar, nem na diagonal, mas podem encostar às margens.
+&nbsp;            
+&nbsp;            ESTRATÉGIA E HISTÓRICO:
+&nbsp;            Analisa o histórico de mensagens desta conversa (o teu &quot;Diário de Bordo&quot;) para decidir os próximos tiros:
+&nbsp;            
+&nbsp;            1. Nunca dispares fora do mapa (ex: Z99) nem repitas coordenadas já testadas.
+&nbsp;            2. Se atingiste um navio na rajada anterior, dispara nas posições contíguas (Norte, Sul, Este, Oeste) na jogada seguinte para descobrir a orientação e afundá-lo.
+&nbsp;            3. Como os navios não se tocam, as posições diagonais a um tiro certeiro são água (exceto no corpo do Galeão). Evita atirar nas diagonais.
+&nbsp;            4. Quando o relatório indicar que um navio foi afundado, deduz a sua posição no mapa e assume que todo o halo (1 posição em redor) é água intransitável.
+&nbsp;            
+&nbsp;            PROTOCOLO DE COMUNICAÇÃO (ESTRITAMENTE JSON):
+&nbsp;            Vais gerar as tuas jogadas em rajadas de 3 tiros. Tens de responder EXCLUSIVAMENTE com um array JSON válido, sem qualquer texto adicional (sem blocos de código markdown como ```json, sem saudações).
+&nbsp;            
+&nbsp;            Formato exato obrigatório:
+&nbsp;            [
+&nbsp;            {&quot;row&quot;: &quot;A&quot;, &quot;column&quot;: 5},
+&nbsp;            {&quot;row&quot;: &quot;C&quot;, &quot;column&quot;: 10},
+&nbsp;            {&quot;row&quot;: &quot;F&quot;, &quot;column&quot;: 5}
+&nbsp;            ]
+&nbsp;            
+&nbsp;            Eu (o sistema) irei responder-te com um JSON contendo o resultado da tua rajada (validShots, sunkBoats, repeatedShots, outsideShots, hitsOnBoats, missedShots). Usa essa minha resposta para planear o teu próximo array JSON de ataque.
+&nbsp;            &quot;&quot;&quot;;
+&nbsp;
+&nbsp;    // Agent related
+&nbsp;    private final ChatLanguageModel agent;
+&nbsp;    private final ChatMemory chatMemory;
+&nbsp;
+<b class="fc">&nbsp;    public AIPlayer() {</b>
+<b class="fc">&nbsp;        Dotenv dotenv = Dotenv.load();</b>
+&nbsp;
+<b class="fc">&nbsp;        String apiKey = dotenv.get(&quot;GOOGLE_API&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        this.agent = OpenAiChatModel.builder()</b>
+<b class="fc">&nbsp;                .baseUrl(BASEURL)</b>
+<b class="fc">&nbsp;                .apiKey(apiKey)</b>
+<b class="fc">&nbsp;                .modelName(MODELNAME)</b>
+<b class="fc">&nbsp;                .temperature(TEMPERATURE)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;
+<b class="fc">&nbsp;        this.chatMemory = MessageWindowChatMemory.withMaxMessages(150);</b>
+<b class="fc">&nbsp;        this.chatMemory.add(SystemMessage.systemMessage(SYSPROMPT));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Recebe o resultado da última rajada efetuada e devolve a nova rajada
+&nbsp;     * @param lastShotResult JSON com resultado da última rajada efetuada pela IA
+&nbsp;     * @return JSON com a nova rajada da IA
+&nbsp;     */
+&nbsp;    public String nextShot(String lastShotResult) {
+<b class="fc">&nbsp;        if (lastShotResult == null || lastShotResult.isEmpty()) {</b>
+<b class="fc">&nbsp;            chatMemory.add(UserMessage.userMessage(&quot;O jogo começou. Envia a tua primeira rajada.&quot;));</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            chatMemory.add(UserMessage.from(lastShotResult));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            Response&lt;AiMessage&gt; response = agent.generate(chatMemory.messages());</b>
+<b class="fc">&nbsp;            chatMemory.add(response.content());</b>
+<b class="fc">&nbsp;            System.out.println(response.content().text());</b>
+<b class="fc">&nbsp;            return response.content().text();</b>
+&nbsp;        } catch (Exception e) {
+<b class="fc">&nbsp;            System.err.println(&quot;Falha na comunicação com a IA (&quot; + e.getMessage() + &quot;).&quot;);</b>
+<b class="fc">&nbsp;            return  null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-18 18:47</div>
+</div>
+</body>
+</html>
