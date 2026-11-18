@@ -36,13 +36,22 @@ public class PositionTest {
 	}
 
 	@Test
-	void constructor() {
+	void constructor1() {
 		Position pos = new Position(1, 1);
 		assertNotNull(pos, "Failed to create Position: object is null");
 		assertEquals(1, pos.getRow(), "Failed to set row: expected 1 but got " + pos.getRow());
 		assertEquals(1, pos.getColumn(), "Failed to set column: expected 1 but got " + pos.getColumn());
 		assertFalse(pos.isOccupied(), "New position should not be occupied");
 		assertFalse(pos.isHit(), "New position should not be hit");
+	}
+
+	@Test
+	void constructor2() {
+		Position pos = new Position('A', 1);
+		assertEquals(0, pos.getRow(), "Character 'A' should map to row 0");
+		assertEquals(0, pos.getColumn(), "Column 1 should map to internal column 0");
+		assertFalse(pos.isOccupied());
+		assertFalse(pos.isHit());
 	}
 
 	@Test
@@ -62,7 +71,7 @@ public class PositionTest {
 
 	@Test
 	void getClassicColumn() {
-		assertEquals(3, position.getColumn(), "Failed to get column: expected 3 but got " + position.getColumn());
+		assertEquals(4, position.getClassicColumn(), "Failed to get column: expected 3 but got " + position.getColumn());
 	}
 
 	@Test
@@ -120,6 +129,12 @@ public class PositionTest {
 	}
 
 	@Test
+	void isAdjacentTo5() {
+		Position other = new Position(2, 5);
+		assertFalse(position.isAdjacentTo(other), "A position with column difference > 1 should not be adjacent");
+	}
+
+	@Test
 	void isAdjacentToWithNull() {
 		assertThrows(NullPointerException.class, () -> position.isAdjacentTo(null),
 				"isAdjacentTo should throw NullPointerException for null input");
@@ -168,6 +183,12 @@ public class PositionTest {
 	}
 
 	@Test
+	void equals6() {
+		Position other = new Position(1, 3);
+		assertFalse(position.equals(other), "Positions with different row but same column should not be equal");
+	}
+
+	@Test
 	void hashCodeConsistency() {
 		Position same = new Position(2, 3);
 		assertEquals(position.hashCode(), same.hashCode(),
@@ -181,5 +202,24 @@ public class PositionTest {
 		assertEquals(expected, position.toString(),
 				"Incorrect string representation: expected '" + expected +
 						"' but got '" + position.toString() + "'");
+	}
+
+	@Test
+	void randomPosition() {
+		Position pos = Position.randomPosition();
+		assertNotNull(pos, "Random position should not be null");
+		assertTrue(pos.isInside(), "Random position must be inside the board bounds");
+	}
+
+	@Test
+	void adjacentPositions1() {
+		Position middlePos = new Position(5, 5);
+		assertEquals(8, middlePos.adjacentPositions().size(), "Middle position should have 8 adjacent positions");
+	}
+
+	@Test
+	void adjacentPositions2() {
+		Position cornerPos = new Position(0, 0);
+		assertEquals(3, cornerPos.adjacentPositions().size(), "Corner position should have only 3 valid adjacent positions");
 	}
 }
