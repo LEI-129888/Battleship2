@@ -177,40 +177,40 @@ public class PositionTest {
 	@DisplayName("equals devolve true para posições com as mesmas coordenadas")
 	void equals1() {
 		Position same = new Position(2, 3);
-		assertTrue(position.equals(same), "Equal positions not identified as equal");
+        assertEquals(position, same, "Equal positions not identified as equal");
 	}
 
 	@Test
 	@DisplayName("equals devolve false quando comparado com null")
 	void equals2() {
-		assertFalse(position.equals(null), "Position should not equal null");
+        assertNotEquals(null, position, "Position should not equal null");
 	}
 
 	@Test
 	@DisplayName("equals devolve false quando comparado com um objeto de outro tipo")
 	void equals3() {
 		Object other = new Object();
-		assertFalse(position.equals(other), "Position should not equal non-Position object");
+        assertNotEquals(position, other, "Position should not equal non-Position object");
 	}
 
 	@Test
 	@DisplayName("equals devolve false para a mesma linha e coluna diferente")
 	void equals4() {
 		Position other = new Position(2, 4);
-		assertFalse(position.equals(other), "Positions with the same row but different column should not be equal");
+        assertNotEquals(position, other, "Positions with the same row but different column should not be equal");
 	}
 
 	@Test
 	@DisplayName("equals devolve true quando comparado consigo próprio")
 	void equals5() {
-		assertTrue(position.equals(position), "A position should be equal to itself");
+        assertEquals(position, position, "A position should be equal to itself");
 	}
 
 	@Test
 	@DisplayName("equals devolve false para linha diferente e a mesma coluna")
 	void equals6() {
 		Position other = new Position(1, 3);
-		assertFalse(position.equals(other), "Positions with different row but same column should not be equal");
+        assertNotEquals(position, other, "Positions with different row but same column should not be equal");
 	}
 
 	@Test
@@ -224,7 +224,6 @@ public class PositionTest {
 	@Test
 	@DisplayName("toString devolve a posição em notação clássica")
 	void toStringFormat() {
-//		String expected = "Row = C, Column = 4";
 		String expected = "C4";
 		assertEquals(expected, position.toString(),
 				"Incorrect string representation: expected '" + expected +

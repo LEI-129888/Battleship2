@@ -200,9 +200,7 @@ public class GameTest {
 	void printBoard4() {
 		List<IMove> moves = new ArrayList<>();
 
-		assertThrows(AssertionError.class, () -> {
-			Game.printBoard(null, moves, false, false, false);
-		});
+		assertThrows(AssertionError.class, () -> Game.printBoard(null, moves, false, false, false));
 	}
 
 	/**
@@ -214,9 +212,7 @@ public class GameTest {
 	void printBoard5() {
 		Fleet fleet = new Fleet();
 
-		assertThrows(AssertionError.class, () -> {
-			Game.printBoard(fleet, null, false, false, false);
-		});
+		assertThrows(AssertionError.class, () -> Game.printBoard(fleet, null, false, false, false));
 	}
 
 	/**
@@ -283,9 +279,7 @@ public class GameTest {
 		List<IPosition> shots = java.util.List.of(new Position(-1, 5));
 		moves.add(new Move(1, shots, new java.util.ArrayList<>()));
 
-		assertDoesNotThrow(() -> {
-			Game.printBoard(fleet, moves, false, true, false);
-		}, "O processamento de um tiro fora do tabuleiro não deve lançar exceções.");
+		assertDoesNotThrow(() -> Game.printBoard(fleet, moves, false, true, false), "O processamento de um tiro fora do tabuleiro não deve lançar exceções.");
 	}
 
 	/**
@@ -314,9 +308,7 @@ public class GameTest {
 	@Test
 	@DisplayName("jsonShots lança AssertionError quando a lista de tiros é nula")
 	void jsonShots2() {
-		assertThrows(AssertionError.class, () -> {
-			Game.jsonShots(null);
-		}, "Deve lançar AssertionError se a lista de tiros for nula.");
+		assertThrows(AssertionError.class, () -> Game.jsonShots(null), "Deve lançar AssertionError se a lista de tiros for nula.");
 	}
 
 	/**
@@ -352,9 +344,7 @@ public class GameTest {
 
 			List<IPosition> shots = java.util.List.of(new Position(0, 0));
 
-			RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-				Game.jsonShots(shots);
-			});
+			RuntimeException exception = assertThrows(RuntimeException.class, () -> Game.jsonShots(shots));
 
 			assertTrue(exception.getMessage().contains("Erro ao serializar o JSON"));
 		}
@@ -409,6 +399,7 @@ public class GameTest {
 	 * até preencher o tabuleiro. Um ciclo infinito garante que o erro esperado
 	 * por ausência de posições válidas seja inevitavelmente lançado.
 	 */
+	@SuppressWarnings("InfiniteLoopStatement")
 	@Test
 	@DisplayName("randomEnemyFire lança erro quando se esgotam as posições disponíveis")
 	void randomEnemyFire2() {
@@ -520,13 +511,11 @@ public class GameTest {
 		Game game = new Game(Fleet.createRandom());
 
 		StringBuilder input = new StringBuilder();
-		// Adicionamos + 1 para forçar o excesso de tiros na mesma linha
 		for (int i = 0; i < Game.NUMBER_SHOTS + 1; i++) {
 			input.append("C").append(i).append(" ");
 		}
 
 		Scanner in = new Scanner(input.toString());
-		// O método deve processar apenas o NUMBER_SHOTS e não dar erro
 		assertNotNull(game.readEnemyFire(in));
 	}
 
@@ -747,10 +736,10 @@ public class GameTest {
 		IShip targetShip = ships.stream()
 				.filter(s -> s.getSize() == 1)
 				.findFirst()
-				.orElse(ships.get(0));
+				.orElse(ships.getFirst());
 
 
-		IPosition hitPos = targetShip.getPositions().get(0);
+		IPosition hitPos = targetShip.getPositions().getFirst();
 
 
 		IGame.ShotResult result = game.firePlayerSingleShot(hitPos, false);
@@ -936,6 +925,7 @@ public class GameTest {
 	 * o bloco 'else' (quando restam menos posições disponíveis do que NUMBER_SHOTS).
 	 * Dispara consecutivamente até esgotar as posições válidas no tabuleiro.
 	 */
+	@SuppressWarnings("InfiniteLoopStatement")
 	@Test
 	@DisplayName("randomPlayerFire lança erro quando se esgotam as posições disponíveis")
 	void randomPlayerFire2() {
