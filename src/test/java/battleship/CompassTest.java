@@ -88,4 +88,13 @@ public class CompassTest {
 	void charToCompass3() {
 		assertNull(Compass.charToCompass('\0'), "Error: Null character should map to null.");
 	}
+
+
+	/**
+	 * Test for the randomBearing method
+	 */
+	@Test
+	void randomBearing() {
+		assertNotNull( Compass.randomBearing(), "Error: This method should not return null.");
+	}
 }
