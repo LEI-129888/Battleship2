@@ -535,7 +535,7 @@ public class GameTest {
 	 */
 	@Test
 	@DisplayName("readEnemyFire lança AssertionError quando o Scanner é nulo")
-	void readEnemyFire_NullScanner() {
+	void readEnemyFireNullScanner() {
 		Game game = new Game(Fleet.createRandom());
 
 		assertThrows(AssertionError.class, () -> game.readEnemyFire(null),
@@ -643,7 +643,7 @@ public class GameTest {
 	 */
 	@Test
 	@DisplayName("readPlayerFire lança AssertionError quando o Scanner é nulo")
-	void readPlayerFire_NullScanner() {
+	void readPlayerFireNullScanner() {
 		assertThrows(AssertionError.class, () -> game.readPlayerFire(null), "Deve falhar na asserção se o scanner for nulo.");
 	}
 
@@ -662,7 +662,7 @@ public class GameTest {
 	 */
 	@Test
 	@DisplayName("fireShots lança AssertionError quando a lista é nula")
-	void fireShot_NullList() {
+	void fireShotNullList() {
 		assertThrows(AssertionError.class, () -> game.fireShots(null), "Deve falhar na asserção se a lista for nula.");
 	}
 
@@ -681,7 +681,7 @@ public class GameTest {
 	 */
 	@Test
 	@DisplayName("firePlayerShots lança AssertionError quando a lista é nula")
-	void firePlayerShot_NullList() {
+	void firePlayerShotNullList() {
 		assertThrows(AssertionError.class, () -> game.firePlayerShots(null), "Deve falhar na asserção se a lista for nula.");
 	}
 
@@ -766,7 +766,7 @@ public class GameTest {
 	 */
 	@Test
 	@DisplayName("firePlayerSingleShot lança AssertionError quando a posição é nula")
-	void firePlayerSingleShot_NullList() {
+	void firePlayerSingleShotNullList() {
 		assertThrows(AssertionError.class, () -> game.firePlayerSingleShot(null, true), "Deve falhar na asserção se a posição for nula.");
 	}
 
@@ -789,7 +789,7 @@ public class GameTest {
 	 */
 	@Test
 	@DisplayName("repeatedShot lança AssertionError quando a posição é nula")
-	void repeatedShot_NullPos() {
+	void repeatedShotNullPos() {
 		assertThrows(AssertionError.class, () -> game.repeatedShot(null), "Deve falhas na asserção se a posição for nula.");
 	}
 
