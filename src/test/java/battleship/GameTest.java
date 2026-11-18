@@ -338,10 +338,8 @@ public class GameTest {
 	void jsonShots4() {
 		JsonProcessingException mockException = new JsonProcessingException("Mocked error") {};
 
-		try (MockedConstruction<ObjectMapper> mocked = Mockito.mockConstruction(ObjectMapper.class,
-				(mock, context) -> {
-					when(mock.writeValueAsString(any())).thenThrow(mockException);
-				})) {
+		try (MockedConstruction<ObjectMapper> ignored = Mockito.mockConstruction(ObjectMapper.class,
+				(mock, context) -> when(mock.writeValueAsString(any())).thenThrow(mockException))) {
 
 			List<IPosition> shots = java.util.List.of(new Position(0, 0));
 
@@ -523,6 +521,7 @@ public class GameTest {
 	/**
 	 * Testa readEnemyFire lançando AssertionError quando o Scanner é null.
 	 */
+	@SuppressWarnings("DataFlowIssue")
 	@Test
 	@DisplayName("readEnemyFire lança AssertionError quando o Scanner é nulo")
 	void readEnemyFireNullScanner() {
@@ -631,6 +630,7 @@ public class GameTest {
 	/**
 	 * Testa readPlayerFire lançando AssertionError quando o Scanner é null.
 	 */
+	@SuppressWarnings("DataFlowIssue")
 	@Test
 	@DisplayName("readPlayerFire lança AssertionError quando o Scanner é nulo")
 	void readPlayerFireNullScanner() {
@@ -650,6 +650,7 @@ public class GameTest {
 	/**
 	 * Testa fireShot lançando AssertionError quando a lista é nula
 	 */
+	@SuppressWarnings("DataFlowIssue")
 	@Test
 	@DisplayName("fireShots lança AssertionError quando a lista é nula")
 	void fireShotNullList() {
@@ -669,6 +670,7 @@ public class GameTest {
 	/**
 	 * Testa firePlayerShot lançando AssertionError quando a lista é nula
 	 */
+	@SuppressWarnings("DataFlowIssue")
 	@Test
 	@DisplayName("firePlayerShots lança AssertionError quando a lista é nula")
 	void firePlayerShotNullList() {
@@ -754,6 +756,7 @@ public class GameTest {
 	/**
 	 * Testa firePlayerSingleShot lançando AssertionError quando a lista é nula
 	 */
+	@SuppressWarnings("DataFlowIssue")
 	@Test
 	@DisplayName("firePlayerSingleShot lança AssertionError quando a posição é nula")
 	void firePlayerSingleShotNullList() {
