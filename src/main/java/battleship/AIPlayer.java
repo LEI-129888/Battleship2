@@ -55,18 +55,21 @@ public class AIPlayer {
 
     public AIPlayer() {
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
-
         String apiKey = dotenv.get("GOOGLE_API");
-
-        this.agent = OpenAiChatModel.builder()
-                .baseUrl(BASEURL)
-                .apiKey(apiKey)
-                .modelName(MODELNAME)
-                .temperature(TEMPERATURE)
-                .build();
 
         this.chatMemory = MessageWindowChatMemory.withMaxMessages(150);
         this.chatMemory.add(SystemMessage.systemMessage(SYSPROMPT));
+
+        if (apiKey != null && !apiKey.trim().isEmpty()) {
+            this.agent = OpenAiChatModel.builder()
+                    .baseUrl(BASEURL)
+                    .apiKey(apiKey)
+                    .modelName(MODELNAME)
+                    .temperature(TEMPERATURE)
+                    .build();
+        } else { // Se a variável de ambiente não estiver definida, desativa a IA (Github Actions)
+            this.agent = null;
+        }
     }
 
     /**
