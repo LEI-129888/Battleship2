@@ -59,6 +59,7 @@ public class GameTest {
 	}
 
 	@Test
+	@DisplayName("Construtor inicializa o jogo com contadores a zero e lista de jogadas vazia")
 	void constructor() {
 		assertNotNull(game, "Game instance should not be null after construction.");
 		assertNotNull(game.getAlienMoves(), "Shots list should not be null after initialization.");
@@ -70,6 +71,7 @@ public class GameTest {
 	}
 
 	@Test
+	@DisplayName("fireShots incrementa o contador de tiros inválidos")
 	void fire2() {
 		List<IPosition> shots = List.of(new Position(-1, 5), new Position(0, 0), new Position(0, 1));
 		game.fireShots(shots);
@@ -77,6 +79,7 @@ public class GameTest {
 	}
 
 	@Test
+	@DisplayName("fireShots incrementa o contador de tiros repetidos")
 	void fire3() {
 		List<IPosition> shots = List.of(new Position(2, 3), new Position(2, 3), new Position(0, 1));
 		game.fireShots(shots);
@@ -84,6 +87,7 @@ public class GameTest {
 	}
 
 	@Test
+	@DisplayName("repeatedShot devolve true para uma posição já disparada")
 	void repeatedShot1() {
 		List<IPosition> positions = List.of(new Position(2, 3), new Position(2, 4), new Position(2, 5));
 		game.fireShots(positions);
@@ -92,12 +96,14 @@ public class GameTest {
 	}
 
 	@Test
+	@DisplayName("repeatedShot devolve false para uma posição ainda não disparada")
 	void repeatedShot2() {
 		Position position = new Position(2, 3);
 		assertFalse(game.repeatedShot(position), "Position (2,3) should not be marked as repeated before firing.");
 	}
 
 	@Test
+	@DisplayName("getAlienMoves contém uma jogada após uma rajada de tiros")
 	void getAlienMoves() {
 		List<IPosition> positions = List.of(new Position(2, 3), new Position(2, 4), new Position(2, 5));
 		game.fireShots(positions);
@@ -105,6 +111,7 @@ public class GameTest {
 	}
 
 	@Test
+	@DisplayName("getRemainingShips atualiza a contagem ao adicionar e afundar navios")
 	void getRemainingShips() {
 		IFleet fleet = game.getMyFleet();
 		Ship ship1 = new Barge(Compass.NORTH, new Position(1, 1));
@@ -124,6 +131,7 @@ public class GameTest {
 	 * foi atingido e já se encontra afundado, validando a saída visual.
 	 */
 	@Test
+	@DisplayName("printBoard com frota oculta mostra tiros, navio afundado e legenda")
 	void printBoard1() {
 		Fleet fleet = new Fleet();
 		Ship sunkShip = new Barge(Compass.NORTH, new Position(0, 0));
@@ -151,6 +159,7 @@ public class GameTest {
 	 * ocultando os tiros e a legenda. Valida que a legenda não é impressa.
 	 */
 	@Test
+	@DisplayName("printBoard com navios visíveis e sem legenda não imprime a legenda")
 	void printBoard2() {
 		Fleet fleet = new Fleet();
 		List<IMove> moves = new java.util.ArrayList<>();
@@ -167,6 +176,7 @@ public class GameTest {
 	 * com um navio intacto. Garante que o navio não é revelado.
 	 */
 	@Test
+	@DisplayName("printBoard com frota oculta não revela navios intactos")
 	void printBoard3() {
 		Fleet fleet = new Fleet();
 		Ship floatingShip = new Barge(Compass.NORTH, new Position(5, 5));
@@ -186,6 +196,7 @@ public class GameTest {
 	 * Garante que é lançado um AssertionError quando a frota passada for nula.
 	 */
 	@Test
+	@DisplayName("printBoard lança AssertionError quando a frota é nula")
 	void printBoard4() {
 		List<IMove> moves = new ArrayList<>();
 
@@ -199,6 +210,7 @@ public class GameTest {
 	 * Garante que é lançado um AssertionError quando a lista de movimentos passada for nula.
 	 */
 	@Test
+	@DisplayName("printBoard lança AssertionError quando a lista de jogadas é nula")
 	void printBoard5() {
 		Fleet fleet = new Fleet();
 
@@ -213,6 +225,7 @@ public class GameTest {
 	 * que não são marcadas as posições adjacentes, validando a matriz de caracteres.
 	 */
 	@Test
+	@DisplayName("printShips não marca posições adjacentes de um navio intacto")
 	void printShips1() {
 		Game myGame = new Game(new Fleet());
 		Ship floatingShip = new Barge(Compass.NORTH, new Position(3, 3));
@@ -234,6 +247,7 @@ public class GameTest {
 	 * que as posições adjacentes do navio são devidamente marcadas na matriz.
 	 */
 	@Test
+	@DisplayName("printShips marca as posições adjacentes de um navio afundado")
 	void printShips2() {
 		Game myGame = new Game(new Fleet());
 		Ship sunkShip = new Barge(Compass.NORTH, new Position(3, 3));
@@ -261,6 +275,7 @@ public class GameTest {
 	 * tiro é simplesmente ignorado sem lançar qualquer exceção (ArrayIndexOutOfBoundsException).
 	 */
 	@Test
+	@DisplayName("printBoardShots ignora tiros fora do tabuleiro sem lançar exceções")
 	void printBoardShots() {
 		Fleet fleet = new Fleet();
 		List<IMove> moves = new java.util.ArrayList<>();
@@ -279,6 +294,7 @@ public class GameTest {
 	 * notação clássica e que o JSON resultante contém os dados esperados.
 	 */
 	@Test
+	@DisplayName("jsonShots serializa corretamente uma lista de posições para JSON")
 	void jsonShots1() {
 		List<IPosition> shots = java.util.List.of(new Position(0, 0), new Position(2, 3));
 		String json = Game.jsonShots(shots);
@@ -296,6 +312,7 @@ public class GameTest {
 	 * cobrindo a primeira linha do método.
 	 */
 	@Test
+	@DisplayName("jsonShots lança AssertionError quando a lista de tiros é nula")
 	void jsonShots2() {
 		assertThrows(AssertionError.class, () -> {
 			Game.jsonShots(null);
@@ -308,6 +325,7 @@ public class GameTest {
 	 * validando a estabilidade do conversor Jackson para listas sem elementos.
 	 */
 	@Test
+	@DisplayName("jsonShots devolve um array JSON vazio para uma lista vazia")
 	void jsonShots3() {
 		List<IPosition> shots = new java.util.ArrayList<>();
 		String json = Game.jsonShots(shots);
@@ -323,6 +341,7 @@ public class GameTest {
 	 * de um JsonProcessingException, garantindo a cobertura do bloco catch.
 	 */
 	@Test
+	@DisplayName("jsonShots lança RuntimeException quando a serialização falha")
 	void jsonShots4() {
 		JsonProcessingException mockException = new JsonProcessingException("Mocked error") {};
 
@@ -347,6 +366,7 @@ public class GameTest {
 	 * corretamente instanciada (através do Fleet.createRandom()) e não é nula.
 	 */
 	@Test
+	@DisplayName("getAlienFleet devolve uma frota alienígena não nula")
 	void getAlienFleet() {
 		IFleet fleet = new Fleet();
 		Game game = new Game(fleet);
@@ -359,6 +379,7 @@ public class GameTest {
 	 * é instanciada corretamente como uma ArrayList.
 	 */
 	@Test
+	@DisplayName("getMyMoves devolve uma lista de jogadas não nula")
 	void getMyMoves() {
 		IFleet fleet = new Fleet();
 		Game game = new Game(fleet);
@@ -371,6 +392,7 @@ public class GameTest {
 	 * tem elementos, acionando naturalmente a lambda de alienMoves.
 	 */
 	@Test
+	@DisplayName("randomEnemyFire devolve um resultado JSON não nulo no fluxo normal")
 	void randomEnemyFire1() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -388,6 +410,7 @@ public class GameTest {
 	 * por ausência de posições válidas seja inevitavelmente lançado.
 	 */
 	@Test
+	@DisplayName("randomEnemyFire lança erro quando se esgotam as posições disponíveis")
 	void randomEnemyFire2() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -406,6 +429,7 @@ public class GameTest {
 	 * e o estado de "sobra apenas 1 ou 2 posições no tabuleiro".
 	 */
 	@Test
+	@DisplayName("randomEnemyFire cobre os ramos residuais em várias simulações de jogo")
 	void randomEnemyFire3() {
 		for (int jogo = 0; jogo < 20; jogo++) {
 
@@ -428,6 +452,7 @@ public class GameTest {
 	 * Testa readEnemyFire com formato clássico (letras e números juntos, ex: A0 A1...).
 	 */
 	@Test
+	@DisplayName("readEnemyFire lê tiros no formato clássico (ex: A1)")
 	void readEnemyFire1() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -444,6 +469,7 @@ public class GameTest {
 	 * Testa readEnemyFire com formato separado (letra separada do número, ex: A 0 B 1...).
 	 */
 	@Test
+	@DisplayName("readEnemyFire lê tiros no formato separado (ex: A 1)")
 	void readEnemyFire2() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -460,6 +486,7 @@ public class GameTest {
 	 * Testa readEnemyFire com posição incompleta (letra sem número).
 	 */
 	@Test
+	@DisplayName("readEnemyFire lança exceção para uma posição incompleta")
 	void readEnemyFire3() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -473,6 +500,7 @@ public class GameTest {
 	 * Testa readEnemyFire com o número errado de posições.
 	 */
 	@Test
+	@DisplayName("readEnemyFire lança exceção para um número errado de tiros")
 	void readEnemyFire4() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -487,6 +515,7 @@ public class GameTest {
 	 * Garante que o ciclo while termina pelo limite de NUMBER_SHOTS e ignora o resto.
 	 */
 	@Test
+	@DisplayName("readEnemyFire ignora tiros em excesso além de NUMBER_SHOTS")
 	void readEnemyFire5() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -505,6 +534,7 @@ public class GameTest {
 	 * Testa readEnemyFire lançando AssertionError quando o Scanner é null.
 	 */
 	@Test
+	@DisplayName("readEnemyFire lança AssertionError quando o Scanner é nulo")
 	void readEnemyFire_NullScanner() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -517,6 +547,7 @@ public class GameTest {
 	 * seguida de formato clássico.
 	 */
 	@Test
+	@DisplayName("readPlayerFire ignora a primeira linha vazia e lê o formato clássico")
 	void readPlayerFire1() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -533,6 +564,7 @@ public class GameTest {
 	 * Testa readPlayerFire com formato separado.
 	 */
 	@Test
+	@DisplayName("readPlayerFire lê tiros no formato separado (ex: B 1)")
 	void readPlayerFire2() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -549,6 +581,7 @@ public class GameTest {
 	 * Testa readPlayerFire com posição incompleta (letra sem número).
 	 */
 	@Test
+	@DisplayName("readPlayerFire lança exceção para uma posição incompleta")
 	void readPlayerFire3() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -561,6 +594,7 @@ public class GameTest {
 	 * Testa readPlayerFire com o número errado de posições.
 	 */
 	@Test
+	@DisplayName("readPlayerFire lança exceção para um número errado de tiros")
 	void readPlayerFire4() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -574,6 +608,7 @@ public class GameTest {
 	 * Cobre o cenário de quebra do while por limite de tamanho no jogador.
 	 */
 	@Test
+	@DisplayName("readPlayerFire ignora tiros em excesso além de NUMBER_SHOTS")
 	void readPlayerFire5() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -591,6 +626,7 @@ public class GameTest {
 	 * NÃO tem linha seguinte. Cobre a segunda metade (falsa) daquele if inicial.
 	 */
 	@Test
+	@DisplayName("readPlayerFire lança exceção para uma linha vazia sem linha seguinte")
 	void readPlayerFire6() {
 		Game game = new Game(Fleet.createRandom());
 
@@ -606,6 +642,7 @@ public class GameTest {
 	 * Testa readPlayerFire lançando AssertionError quando o Scanner é null.
 	 */
 	@Test
+	@DisplayName("readPlayerFire lança AssertionError quando o Scanner é nulo")
 	void readPlayerFire_NullScanner() {
 		assertThrows(AssertionError.class, () -> game.readPlayerFire(null), "Deve falhar na asserção se o scanner for nulo.");
 	}
@@ -614,6 +651,7 @@ public class GameTest {
 	 * Testa a verificação do comprimento da lista shots
 	 */
 	@Test
+	@DisplayName("fireShots lança exceção quando o número de tiros é incorreto")
 	void fireShots() {
 		List<IPosition> shots = List.of(new Position(0, 0));
 		assertThrows(IllegalArgumentException.class, () -> game.fireShots(shots), "Deve falhar pelo número de tiros não corresponder");
@@ -623,6 +661,7 @@ public class GameTest {
 	 * Testa fireShot lançando AssertionError quando a lista é nula
 	 */
 	@Test
+	@DisplayName("fireShots lança AssertionError quando a lista é nula")
 	void fireShot_NullList() {
 		assertThrows(AssertionError.class, () -> game.fireShots(null), "Deve falhar na asserção se a lista for nula.");
 	}
@@ -631,6 +670,7 @@ public class GameTest {
 	 * Testa a verificação do comprimento da lista shots
 	 */
 	@Test
+	@DisplayName("firePlayerShots lança exceção quando o número de tiros é incorreto")
 	void firePlayerShots() {
 		List<IPosition> shots = List.of(new Position(0, 0));
 		assertThrows(IllegalArgumentException.class, () -> game.firePlayerShots(shots), "Deve falhar pelo número de tiros não corresponder");
@@ -640,6 +680,7 @@ public class GameTest {
 	 * Testa firePlayerShot lançando AssertionError quando a lista é nula
 	 */
 	@Test
+	@DisplayName("firePlayerShots lança AssertionError quando a lista é nula")
 	void firePlayerShot_NullList() {
 		assertThrows(AssertionError.class, () -> game.firePlayerShots(null), "Deve falhar na asserção se a lista for nula.");
 	}
@@ -648,6 +689,7 @@ public class GameTest {
 	 * Testa o firePlayerSingleShot em caso de tiro repetido pela variável isRepeated
 	 */
 	@Test
+	@DisplayName("firePlayerSingleShot trata o tiro como repetido quando isRepeated é true")
 	void firePlayerSingleShot1() {
 		Position validPos = new Position(2, 2);
 
@@ -663,6 +705,7 @@ public class GameTest {
 	 * Testa o firePlayerSingleShot em caso de tiro repetido pela variável isRepeated e verificação do método repeatedShots
 	 */
 	@Test
+	@DisplayName("firePlayerSingleShot trata como repetido um tiro disparado duas vezes")
 	void firePlayerSingleShot2() {
 		Position validPos = new Position(2, 2);
 		game.firePlayerSingleShot(validPos, true);
@@ -678,6 +721,7 @@ public class GameTest {
 	 * Testa o firePlayerSingleShot em caso de tiro repetido pela verificação do método repeatedShots
 	 */
 	@Test
+	@DisplayName("firePlayerSingleShot deteta tiro repetido através de repeatedShots")
 	void firePlayerSingleShot3() {
 		Position validPos = new Position(2, 2);
 
@@ -696,6 +740,7 @@ public class GameTest {
 	 * Testa o firePlayerSingleShot quando afunda um barco
 	 */
 	@Test
+	@DisplayName("firePlayerSingleShot afunda um navio ao atingi-lo")
 	void firePlayerSingleShot4() {
 		List<IShip> ships = game.getAlienFleet().getShips();
 
@@ -720,6 +765,7 @@ public class GameTest {
 	 * Testa firePlayerSingleShot lançando AssertionError quando a lista é nula
 	 */
 	@Test
+	@DisplayName("firePlayerSingleShot lança AssertionError quando a posição é nula")
 	void firePlayerSingleShot_NullList() {
 		assertThrows(AssertionError.class, () -> game.firePlayerSingleShot(null, true), "Deve falhar na asserção se a posição for nula.");
 	}
@@ -728,6 +774,7 @@ public class GameTest {
 	 * Testa playerRepeatedShots quando a posição não está na lista
 	 */
 	@Test
+	@DisplayName("playerRepeatedShots devolve false para uma posição não disparada")
 	void playerRepeatedShots() {
 		Position validPos = new Position(2, 2);
 
@@ -741,6 +788,7 @@ public class GameTest {
 	 * Testa repeatedShot lançando AssertionError quando a lista é nula
 	 */
 	@Test
+	@DisplayName("repeatedShot lança AssertionError quando a posição é nula")
 	void repeatedShot_NullPos() {
 		assertThrows(AssertionError.class, () -> game.repeatedShot(null), "Deve falhas na asserção se a posição for nula.");
 	}
@@ -749,6 +797,7 @@ public class GameTest {
 	 * Testa se printMyBoard imprime alguma coisa
 	 */
 	@Test
+	@DisplayName("printMyBoard imprime o tabuleiro do jogador na consola")
 	void printMyBoard() {
 		boolean showShots = true;
 		boolean showLegend = true;
@@ -762,6 +811,7 @@ public class GameTest {
 	 * Testa se printAlienBoard imprime alguma coisa
 	 */
 	@Test
+	@DisplayName("printAlienBoard imprime o tabuleiro alienígena na consola")
 	void printAlienBoard() {
 		boolean showShots = true;
 		boolean showLegend = true;
@@ -775,6 +825,7 @@ public class GameTest {
 	 * Testa o setLastTime e getLastTime
 	 */
 	@Test
+	@DisplayName("setLastTime e getLastTime guardam e devolvem o tempo corretamente")
 	void time() {
 		long tempoEsperado = 12345;
 
@@ -786,6 +837,7 @@ public class GameTest {
 	 * Testa o getBoard com showShots a true
 	 */
 	@Test
+	@DisplayName("getBoard devolve uma matriz com as dimensões do tabuleiro")
 	void getBoard() {
 		char[][] board = game.getBoard(true);
 
@@ -800,6 +852,7 @@ public class GameTest {
 	 * (frota inimiga totalmente afundada e frota do jogador com navios sobreviventes).
 	 */
 	@Test
+	@DisplayName("over regista vitória do jogador quando a frota inimiga é destruída")
 	void over1() {
 		Game game = new Game(new Fleet());
 		game.getMyFleet().addShip(new Barge(Compass.NORTH, new Position(0, 0))); // Frota do jogador com 1 navio sobrevivente
@@ -825,6 +878,7 @@ public class GameTest {
 	 * a frota alienígena ainda possui navios a flutuar (playerWon = false por short-circuit do &&).
 	 */
 	@Test
+	@DisplayName("over regista derrota quando a frota alienígena ainda tem navios")
 	void over2() {
 		Game game = new Game(new Fleet());
 
@@ -842,6 +896,7 @@ public class GameTest {
 	 * Cobre a segunda condição da variável playerWon (getRemainingShips() > 0) sendo avaliada como falsa.
 	 */
 	@Test
+	@DisplayName("over regista que o jogador não ganhou em caso de empate")
 	void over3() {
 		Game game = new Game(new Fleet());
 
@@ -866,6 +921,7 @@ public class GameTest {
 	 * (candidateShots.size() >= Game.NUMBER_SHOTS).
 	 */
 	@Test
+	@DisplayName("randomPlayerFire devolve um resultado JSON e regista a jogada")
 	void randomPlayerFire1() {
 		Game myGame = new Game(Fleet.createRandom());
 
@@ -881,6 +937,7 @@ public class GameTest {
 	 * Dispara consecutivamente até esgotar as posições válidas no tabuleiro.
 	 */
 	@Test
+	@DisplayName("randomPlayerFire lança erro quando se esgotam as posições disponíveis")
 	void randomPlayerFire2() {
 		Game myGame = new Game(Fleet.createRandom());
 
@@ -898,6 +955,7 @@ public class GameTest {
 	 * forçando a execução completa do primeiro ciclo while dentro do bloco 'else'.
 	 */
 	@Test
+	@DisplayName("randomPlayerFire cobre os ramos residuais em várias simulações de jogo")
 	void randomPlayerFire3() {
 		for (int jogo = 0; jogo < 50; jogo++) {
 			Game myGame = new Game(Fleet.createRandom());
