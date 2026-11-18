@@ -200,6 +200,7 @@ public class PositionTest {
         assertNotEquals(position, other, "Positions with the same row but different column should not be equal");
 	}
 
+	@SuppressWarnings("EqualsWithItself")
 	@Test
 	@DisplayName("equals devolve true quando comparado consigo próprio")
 	void equals5() {

@@ -305,6 +305,7 @@ public class GameTest {
 	 * Garante que é lançado um AssertionError quando a lista de tiros passada for nula,
 	 * cobrindo a primeira linha do método.
 	 */
+	@SuppressWarnings("DataFlowIssue")
 	@Test
 	@DisplayName("jsonShots lança AssertionError quando a lista de tiros é nula")
 	void jsonShots2() {
