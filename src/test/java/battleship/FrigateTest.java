@@ -1,25 +1,20 @@
 package battleship;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test class for the Frigate class.
- * Author: ${user.name}
- * Date: ${current_date}
- * Time: ${current_time}
- * Cyclomatic Complexity for each method:
- * - Constructor: 5
- * - getSize: 1
- * - stillFloating: 2
- * - getPositions: 2
- * - getTopMostPos: 2
- * - getBottomMostPos: 2
- * - getLeftMostPos: 2
- * - getRightMostPos: 2
+ * Test class for class Frigate.
+ * Author: 129867
+ * Date: 2026-11-18 18:38
+ * Cyclomatic Complexity:
+ * - constructor: 5
  */
 public class FrigateTest {
 
@@ -35,137 +30,127 @@ public class FrigateTest {
 		frigate = null;
 	}
 
-	/**
-	 * Test for the constructor with NORTH bearing.
-	 * Cyclomatic Complexity: 5
-	 */
 	@Test
+	@DisplayName("Test Frigate constructor with NORTH bearing")
 	void testConstructorNorth() {
-		assertNotNull(frigate, "Error: Frigate instance should not be null.");
-		assertEquals("Fragata", frigate.getCategory(), "Error: Frigate category should be 'Fragata'.");
-		assertEquals(Compass.NORTH, frigate.getBearing(), "Error: Frigate bearing is incorrect.");
-		assertEquals(4, frigate.getSize(), "Error: Frigate size should be 4.");
-
 		List<IPosition> positions = frigate.getPositions();
-		assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions.");
-		assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for NORTH.");
-		assertEquals(new Position(6, 5), positions.get(1), "Error: Second position is incorrect for NORTH.");
-		assertEquals(new Position(7, 5), positions.get(2), "Error: Third position is incorrect for NORTH.");
-		assertEquals(new Position(8, 5), positions.get(3), "Error: Fourth position is incorrect for NORTH.");
+		assertAll("Frigate NORTH constructor",
+				() -> assertNotNull(frigate, "Error: Frigate instance should not be null."),
+				() -> assertEquals("Fragata", frigate.getCategory(), "Error: Frigate category should be 'Fragata'."),
+				() -> assertEquals(Compass.NORTH, frigate.getBearing(), "Error: Frigate bearing is incorrect."),
+				() -> assertEquals(4, frigate.getSize(), "Error: Frigate size should be 4."),
+				() -> assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions."),
+				() -> assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for NORTH."),
+				() -> assertEquals(new Position(6, 5), positions.get(1), "Error: Second position is incorrect for NORTH."),
+				() -> assertEquals(new Position(7, 5), positions.get(2), "Error: Third position is incorrect for NORTH."),
+				() -> assertEquals(new Position(8, 5), positions.get(3), "Error: Fourth position is incorrect for NORTH.")
+		);
 	}
 
-	/**
-	 * Test for the constructor with EAST bearing.
-	 */
 	@Test
+	@DisplayName("Test Frigate constructor with SOUTH bearing")
+	void testConstructorSouth() {
+		frigate = new Frigate(Compass.SOUTH, new Position(5, 5));
+		List<IPosition> positions = frigate.getPositions();
+		assertAll("Frigate SOUTH constructor",
+				() -> assertNotNull(frigate, "Error: Frigate instance should not be null."),
+				() -> assertEquals(Compass.SOUTH, frigate.getBearing(), "Error: Frigate bearing should be SOUTH."),
+				() -> assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions."),
+				() -> assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for SOUTH."),
+				() -> assertEquals(new Position(6, 5), positions.get(1), "Error: Second position is incorrect for SOUTH."),
+				() -> assertEquals(new Position(7, 5), positions.get(2), "Error: Third position is incorrect for SOUTH."),
+				() -> assertEquals(new Position(8, 5), positions.get(3), "Error: Fourth position is incorrect for SOUTH.")
+		);
+	}
+
+	@Test
+	@DisplayName("Test Frigate constructor with EAST bearing")
 	void testConstructorEast() {
 		frigate = new Frigate(Compass.EAST, new Position(5, 5));
 		List<IPosition> positions = frigate.getPositions();
-
-		assertNotNull(frigate, "Error: Frigate instance should not be null.");
-		assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions.");
-		assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for EAST.");
-		assertEquals(new Position(5, 6), positions.get(1), "Error: Second position is incorrect for EAST.");
-		assertEquals(new Position(5, 7), positions.get(2), "Error: Third position is incorrect for EAST.");
-		assertEquals(new Position(5, 8), positions.get(3), "Error: Fourth position is incorrect for EAST.");
+		assertAll("Frigate EAST constructor",
+				() -> assertNotNull(frigate, "Error: Frigate instance should not be null."),
+				() -> assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions."),
+				() -> assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for EAST."),
+				() -> assertEquals(new Position(5, 6), positions.get(1), "Error: Second position is incorrect for EAST."),
+				() -> assertEquals(new Position(5, 7), positions.get(2), "Error: Third position is incorrect for EAST."),
+				() -> assertEquals(new Position(5, 8), positions.get(3), "Error: Fourth position is incorrect for EAST.")
+		);
 	}
 
-	/**
-	 * Test for the constructor with WEST bearing.
-	 */
 	@Test
+	@DisplayName("Test Frigate constructor with WEST bearing")
 	void testConstructorWest() {
 		frigate = new Frigate(Compass.WEST, new Position(5, 5));
 		List<IPosition> positions = frigate.getPositions();
-
-		assertNotNull(frigate, "Error: Frigate instance should not be null.");
-		assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions.");
-		assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for WEST.");
-		assertEquals(new Position(5, 6), positions.get(1), "Error: Second position is incorrect for WEST.");
-		assertEquals(new Position(5, 7), positions.get(2), "Error: Third position is incorrect for WEST.");
-		assertEquals(new Position(5, 8), positions.get(3), "Error: Fourth position is incorrect for WEST.");
+		assertAll("Frigate WEST constructor",
+				() -> assertNotNull(frigate, "Error: Frigate instance should not be null."),
+				() -> assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions."),
+				() -> assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for WEST."),
+				() -> assertEquals(new Position(5, 6), positions.get(1), "Error: Second position is incorrect for WEST."),
+				() -> assertEquals(new Position(5, 7), positions.get(2), "Error: Third position is incorrect for WEST."),
+				() -> assertEquals(new Position(5, 8), positions.get(3), "Error: Fourth position is incorrect for WEST.")
+		);
 	}
 
-	/**
-	 * Test for the getSize method.
-	 * Cyclomatic Complexity: 1
-	 */
 	@Test
+	@DisplayName("Test getSize returns 4 for Frigate")
 	void testGetSize() {
 		assertEquals(4, frigate.getSize(), "Error: Frigate size should be 4.");
 	}
 
-	/**
-	 * Test for the stillFloating method (all positions intact).
-	 * Cyclomatic Complexity: 2
-	 */
 	@Test
+	@DisplayName("Test stillFloating returns true when all positions are intact")
 	void testStillFloating1() {
 		assertTrue(frigate.stillFloating(), "Error: Frigate should still be floating.");
 	}
 
-	/**
-	 * Test for the stillFloating method (one position hit).
-	 */
 	@Test
+	@DisplayName("Test stillFloating returns true when only one position is hit")
 	void testStillFloating2() {
 		frigate.getPositions().get(0).shoot();
 		assertTrue(frigate.stillFloating(), "Error: Frigate should still be floating with one hit position.");
 	}
 
-	/**
-	 * Test for the stillFloating method (all positions hit).
-	 */
 	@Test
+	@DisplayName("Test stillFloating returns false when all positions are hit")
 	void testStillFloating3() {
 		frigate.getPositions().forEach(IPosition::shoot);
 		assertFalse(frigate.stillFloating(), "Error: Frigate should not be floating if all positions are hit.");
 	}
 
-	/**
-	 * Test for the getTopMostPos method.
-	 * Cyclomatic Complexity: 2
-	 */
 	@Test
+	@DisplayName("Test getTopMostPos returns topmost row")
 	void testGetTopMostPos() {
 		assertEquals(5, frigate.getTopMostPos(), "Error: The topmost position should be 5.");
 	}
 
-	/**
-	 * Test for the getBottomMostPos method.
-	 * Cyclomatic Complexity: 2
-	 */
 	@Test
+	@DisplayName("Test getBottomMostPos returns bottommost row")
 	void testGetBottomMostPos() {
 		assertEquals(8, frigate.getBottomMostPos(), "Error: The bottommost position should be 8.");
 	}
 
-	/**
-	 * Test for the getLeftMostPos method.
-	 * Cyclomatic Complexity: 2
-	 */
 	@Test
+	@DisplayName("Test getLeftMostPos returns leftmost column")
 	void testGetLeftMostPos() {
 		assertEquals(5, frigate.getLeftMostPos(), "Error: The leftmost position should be 5.");
 	}
 
-	/**
-	 * Test for the getRightMostPos method.
-	 * Cyclomatic Complexity: 2
-	 */
 	@Test
+	@DisplayName("Test getRightMostPos returns rightmost column")
 	void testGetRightMostPos() {
 		assertEquals(5, frigate.getRightMostPos(), "Error: The rightmost position should be 5.");
 	}
 
-	/**
-	 * Test for the constructor with invalid input (null).
-	 */
 	@Test
+	@DisplayName("Test Frigate constructor throws NullPointerException on null input")
 	void testConstructorInvalidInput() {
-		assertThrows(NullPointerException.class, () -> new Frigate(null, null),
-				"Error: NullPointerException should be thrown for null input.");
-		assertThrows(NullPointerException.class, () -> new Frigate(Compass.NORTH, null),
-				"Error: NullPointerException should be thrown for null position.");
+		assertAll("Invalid constructor inputs",
+				() -> assertThrows(NullPointerException.class, () -> new Frigate(null, null),
+						"Error: NullPointerException should be thrown for null input."),
+				() -> assertThrows(NullPointerException.class, () -> new Frigate(Compass.NORTH, null),
+						"Error: NullPointerException should be thrown for null position.")
+		);
 	}
 }
