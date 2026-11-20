@@ -252,7 +252,7 @@ public abstract class Ship implements IShip
 	int top = getPositions().get(0).getRow();
 	for (int i = 1; i < getSize(); i++)
 	    if (getPositions().get(i).getRow() < top)
-		top = getPositions().get(i).getRow();
+			top = getPositions().get(i).getRow();
 	return top;
     }
 
@@ -312,7 +312,7 @@ public abstract class Ship implements IShip
 	int right = getPositions().get(0).getColumn();
 	for (int i = 1; i < getSize(); i++)
 	    if (getPositions().get(i).getColumn() > right)
-		right = getPositions().get(i).getColumn();
+			right = getPositions().get(i).getColumn();
 	return right;
     }
 
@@ -386,11 +386,10 @@ public abstract class Ship implements IShip
 
 	public boolean isInsideBoard()
 	{
-		assert this != null;
-
-		return (getLeftMostPos() >= 0 && getRightMostPos() <= Game.BOARD_SIZE - 1 && getTopMostPos() >= 0
-				&& getBottomMostPos() <= Game.BOARD_SIZE - 1);
+		boolean PositionInBounds = getLeftMostPos() >= 0 && getRightMostPos() <= Game.BOARD_SIZE - 1;
+		return (PositionInBounds && getTopMostPos() >= 0 && getBottomMostPos() <= Game.BOARD_SIZE - 1);
 	}
+
 	/**
 	 * Shoot.
 	 *

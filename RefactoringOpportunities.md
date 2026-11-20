@@ -9,7 +9,7 @@
 | `Compass::charToCompass` | Switch Statements | Extract Method | 129867          |
 | `Ship::buildShip` | Switch Statements | Extract Method | 129865          |
 | `Tasks::menu` | Data Flow & Redundancy | Inline Variable | 129888          |
-| `Ship::isInsideBoard` | Data Flow & Redundancy | Inline Method | 129865          |
+| `Ship::isInsideBoard` | Expressions & Conditionals | Introduce Variable | 129865          |
 | `Game::jsonShots` | Data Flow & Redundancy | Safe Delete | 129867         |
 | `Caravel` | Duplication | Extract Method | 129867          |
 | `Carrack` | Duplication | Extract Method | 129888          |
