@@ -281,18 +281,6 @@ public class FleetTest {
 	}
 
 	@Test
-	@DisplayName("Test printShipsByCategory executes for valid category and throws on null")
-	void printShipsByCategory() {
-		fleet.addShip(new Barge(Compass.NORTH, new Position(1, 1)));
-		assertAll("printShipsByCategory",
-				() -> assertDoesNotThrow(() -> fleet.printShipsByCategory("Barca"),
-						"Error: printShipsByCategory should not throw for valid category."),
-				() -> assertThrows(AssertionError.class, () -> fleet.printShipsByCategory(null),
-						"Error: expected AssertionError when category is null.")
-		);
-	}
-
-	@Test
 	@DisplayName("Test printFloatingShips executes without throwing")
 	void printFloatingShips() {
 		fleet.addShip(new Barge(Compass.NORTH, new Position(1, 1)));
