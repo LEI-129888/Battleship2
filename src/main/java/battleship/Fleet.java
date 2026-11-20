@@ -223,13 +223,7 @@ public class Fleet implements IFleet
 	public void printStatus()
     {
 		System.out.println("Estado da Frota: " + this.getFloatingShips().size() + " a flutuar, " + this.getSunkShips().size() + " afundados!");
-//		printAllShips();
-//		printFloatingShips();
-//		printShipsByCategory("Galeao");
-//		printShipsByCategory("Fragata");
-//		printShipsByCategory("Nau");
-//		printShipsByCategory("Caravela");
-//		printShipsByCategory("Barca");
+
     }
 
 	/**
