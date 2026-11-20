@@ -49,7 +49,8 @@ import battleship.history.GameRecord;
         "InstantiationOfUtilityClass",
         "SuspiciousInvocationHandlerImplementation",
         "BusyWait",
-        "OverlyLongMethod"
+        "OverlyLongMethod",
+        "DataFlowIssue"
 })
 class TasksTest {
 
