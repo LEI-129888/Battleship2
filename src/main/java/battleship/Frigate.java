@@ -19,6 +19,10 @@ public class Frigate extends Ship {
 	public Frigate(Compass bearing, IPosition pos) {
 		super("Fragata", bearing, pos, 4);
 
+		initializePositions(bearing, pos);
+	}
+
+	private void initializePositions(Compass bearing, IPosition pos) {
 		switch (bearing) {
 			case NORTH:
 				for (int r = 0; r < this.getSize(); r++)
