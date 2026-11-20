@@ -402,11 +402,7 @@ public class Tasks {
 
 		game.readPlayerFire(in);
 
-		if (timer.isStarted()) {
-			timer.stop();
-		}
-		game.setLastTime(timer.getTime());
-		timer.reset();
+		recordTurnTime(game, timer);
 
 		int enemyShipsAfter = game.getAlienFleet().getFloatingShips().size();
 		int hitsAfter = game.getHits();
@@ -415,31 +411,49 @@ public class Tasks {
 
 		String newAiReport = lastAiResult;
 		if (!checkPlayerWon(game)) {
-			System.out.println("IA a processar...");
-			String aiShotsJson = ai.nextShot(lastAiResult);
-			if (aiShotsJson != null) {
-				try {
-					List<IPosition> aiShots = parseAiShots(aiShotsJson);
-					game.fireShots(aiShots);
-				} catch (Exception e) {
-					game.randomEnemyFire();
-				}
-			} else {
-				game.randomEnemyFire();
-			}
-			IMove lastMove = game.getAlienMoves().getLast();
-			newAiReport = lastMove.processEnemyFire(false);
+			newAiReport = executeAiTurn(game, ai, lastAiResult);
 		}
 
+		printBoards(game);
+
+		timer.start();
+		return newAiReport;
+	}
+
+	private static void printBoards(IGame game) {
 		System.out.println("\n--- O MEU TABULEIRO ---");
 		game.printMyBoard(true, true);
 		System.out.println("\n--- TABULEIRO INIMIGO ---");
 		game.printAlienBoard(true, true);
 
 		System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
+	}
 
-		timer.start();
+	private static String executeAiTurn(IGame game, AIPlayer ai, String lastAiResult) {
+		String newAiReport;
+		System.out.println("IA a processar...");
+		String aiShotsJson = ai.nextShot(lastAiResult);
+		if (aiShotsJson != null) {
+			try {
+				List<IPosition> aiShots = parseAiShots(aiShotsJson);
+				game.fireShots(aiShots);
+			} catch (Exception e) {
+				game.randomEnemyFire();
+			}
+		} else {
+			game.randomEnemyFire();
+		}
+		IMove lastMove = game.getAlienMoves().getLast();
+		newAiReport = lastMove.processEnemyFire(false);
 		return newAiReport;
+	}
+
+	private static void recordTurnTime(IGame game, StopWatch timer) {
+		if (timer.isStarted()) {
+			timer.stop();
+		}
+		game.setLastTime(timer.getTime());
+		timer.reset();
 	}
 
 	/**
