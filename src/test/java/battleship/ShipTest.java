@@ -194,8 +194,8 @@ public class ShipTest {
         assertAll("Ship positions",
                 () -> assertNotNull(positions, "Error: Ship positions should not be null."),
                 () -> assertEquals(1, positions.size(), "Error: Ship should have exactly one position."),
-                () -> assertEquals(5, positions.get(0).getRow(), "Error: Position's row should be 5."),
-                () -> assertEquals(5, positions.get(0).getColumn(), "Error: Position's column should be 5.")
+                () -> assertEquals(5, positions.getFirst().getRow(), "Error: Position's row should be 5."),
+                () -> assertEquals(5, positions.getFirst().getColumn(), "Error: Position's column should be 5.")
         );
     }
 
@@ -233,7 +233,7 @@ public class ShipTest {
     @Test
     @DisplayName("Test stillFloating returns false when all positions are hit")
     void stillFloating2() {
-        ship.getPositions().get(0).shoot();
+        ship.getPositions().getFirst().shoot();
         assertFalse(ship.stillFloating(), "Error: Ship should no longer be floating after being hit.");
     }
 

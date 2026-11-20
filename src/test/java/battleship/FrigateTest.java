@@ -40,7 +40,7 @@ public class FrigateTest {
 				() -> assertEquals(Compass.NORTH, frigate.getBearing(), "Error: Frigate bearing is incorrect."),
 				() -> assertEquals(4, frigate.getSize(), "Error: Frigate size should be 4."),
 				() -> assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions."),
-				() -> assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for NORTH."),
+				() -> assertEquals(new Position(5, 5), positions.getFirst(), "Error: First position is incorrect for NORTH."),
 				() -> assertEquals(new Position(6, 5), positions.get(1), "Error: Second position is incorrect for NORTH."),
 				() -> assertEquals(new Position(7, 5), positions.get(2), "Error: Third position is incorrect for NORTH."),
 				() -> assertEquals(new Position(8, 5), positions.get(3), "Error: Fourth position is incorrect for NORTH.")
@@ -56,7 +56,7 @@ public class FrigateTest {
 				() -> assertNotNull(frigate, "Error: Frigate instance should not be null."),
 				() -> assertEquals(Compass.SOUTH, frigate.getBearing(), "Error: Frigate bearing should be SOUTH."),
 				() -> assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions."),
-				() -> assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for SOUTH."),
+				() -> assertEquals(new Position(5, 5), positions.getFirst(), "Error: First position is incorrect for SOUTH."),
 				() -> assertEquals(new Position(6, 5), positions.get(1), "Error: Second position is incorrect for SOUTH."),
 				() -> assertEquals(new Position(7, 5), positions.get(2), "Error: Third position is incorrect for SOUTH."),
 				() -> assertEquals(new Position(8, 5), positions.get(3), "Error: Fourth position is incorrect for SOUTH.")
@@ -71,7 +71,7 @@ public class FrigateTest {
 		assertAll("Frigate EAST constructor",
 				() -> assertNotNull(frigate, "Error: Frigate instance should not be null."),
 				() -> assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions."),
-				() -> assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for EAST."),
+				() -> assertEquals(new Position(5, 5), positions.getFirst(), "Error: First position is incorrect for EAST."),
 				() -> assertEquals(new Position(5, 6), positions.get(1), "Error: Second position is incorrect for EAST."),
 				() -> assertEquals(new Position(5, 7), positions.get(2), "Error: Third position is incorrect for EAST."),
 				() -> assertEquals(new Position(5, 8), positions.get(3), "Error: Fourth position is incorrect for EAST.")
@@ -86,7 +86,7 @@ public class FrigateTest {
 		assertAll("Frigate WEST constructor",
 				() -> assertNotNull(frigate, "Error: Frigate instance should not be null."),
 				() -> assertEquals(4, positions.size(), "Error: Frigate should have exactly 4 positions."),
-				() -> assertEquals(new Position(5, 5), positions.get(0), "Error: First position is incorrect for WEST."),
+				() -> assertEquals(new Position(5, 5), positions.getFirst(), "Error: First position is incorrect for WEST."),
 				() -> assertEquals(new Position(5, 6), positions.get(1), "Error: Second position is incorrect for WEST."),
 				() -> assertEquals(new Position(5, 7), positions.get(2), "Error: Third position is incorrect for WEST."),
 				() -> assertEquals(new Position(5, 8), positions.get(3), "Error: Fourth position is incorrect for WEST.")
@@ -108,7 +108,7 @@ public class FrigateTest {
 	@Test
 	@DisplayName("Test stillFloating returns true when only one position is hit")
 	void testStillFloating2() {
-		frigate.getPositions().get(0).shoot();
+		frigate.getPositions().getFirst().shoot();
 		assertTrue(frigate.stillFloating(), "Error: Frigate should still be floating with one hit position.");
 	}
 

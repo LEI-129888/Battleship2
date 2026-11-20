@@ -78,7 +78,7 @@ public class FleetTest {
 		fleet.addShip(ship);
 		assertAll("getShips after addition",
 				() -> assertEquals(1, fleet.getShips().size(), "Error: Fleet should have size 1 after adding a ship."),
-				() -> assertEquals(ship, fleet.getShips().get(0), "Error: Fleet's first ship should match the added ship.")
+				() -> assertEquals(ship, fleet.getShips().getFirst(), "Error: Fleet's first ship should match the added ship.")
 		);
 	}
 
@@ -140,7 +140,7 @@ public class FleetTest {
 		List<IShip> barges = fleet.getShipsLike("Barca");
 		assertAll("getShipsLike matching",
 				() -> assertEquals(1, barges.size(), "Error: There should be exactly one ship of category 'Barca'."),
-				() -> assertEquals(ship1, barges.get(0), "Error: The returned ship should match ship1.")
+				() -> assertEquals(ship1, barges.getFirst(), "Error: The returned ship should match ship1.")
 		);
 	}
 
@@ -175,7 +175,7 @@ public class FleetTest {
 		List<IShip> floating = fleet.getFloatingShips();
 		assertAll("getFloatingShips after sinking one",
 				() -> assertEquals(1, floating.size(), "Error: Only one ship should be floating after sinking ship1."),
-				() -> assertEquals(ship2, floating.get(0), "Error: Remaining floating ship should be ship2.")
+				() -> assertEquals(ship2, floating.getFirst(), "Error: Remaining floating ship should be ship2.")
 		);
 	}
 
@@ -195,7 +195,7 @@ public class FleetTest {
 		List<IShip> sunk = fleet.getSunkShips();
 		assertAll("getSunkShips after sinking one",
 				() -> assertEquals(1, sunk.size(), "Error: Only one ship should be sunk."),
-				() -> assertEquals(ship1, sunk.get(0), "Error: Sunk ship should be ship1.")
+				() -> assertEquals(ship1, sunk.getFirst(), "Error: Sunk ship should be ship1.")
 		);
 	}
 
@@ -267,6 +267,7 @@ public class FleetTest {
 
 	@Test
 	@DisplayName("Test printShips throws AssertionError when list is null")
+	@SuppressWarnings("DataFlowIssue")
 	void printShips2() {
 		assertThrows(AssertionError.class, () -> fleet.printShips(null),
 				"Error: expected AssertionError when ships list is null.");
