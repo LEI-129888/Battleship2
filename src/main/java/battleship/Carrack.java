@@ -22,19 +22,13 @@ public class Carrack extends Ship {
 		super("Nau", bearing, pos, 3);
 
 		switch (bearing) {
-			case SOUTH:
+			case SOUTH, NORTH:
 				addVerticalPositions(pos);
 				break;
-			case NORTH:
-				addVerticalPositions(pos);
-				break;
-			case EAST:
+            case EAST, WEST:
 				addHorizontalPositions(pos);
 				break;
-			case WEST:
-				addHorizontalPositions(pos);
-				break;
-		}
+        }
 	}
 
 	/**
