@@ -33,24 +33,6 @@ public class Tasks {
 	private static final String ALARM = "alarm";
 
 	/**
-	 * Strings to be used by the user
-	 */
-	private static final String AJUDA = "ajuda";
-	private static final String GERAFROTA = "gerafrota";
-	private static final String LEFROTA = "lefrota";
-	private static final String DESISTIR = "desisto";
-	private static final String RAJADA = "rajada";
-	private static final String TIROS = "tiros";
-	private static final String MAPA = "mapa";
-	private static final String STATUS = "estado";
-	private static final String SIMULA = "simula";
-	private static final String HISTORICO = "historico"; //devemos poder ver um histórico dos jogos a partir do menu
-	private static final String PDF = "pdf";
-	private static final String SCOREBOARD = "scoreboard";
-	private static final String TUI = "tui";
-	private static final String TEMPO = "tempo";
-
-	/**
 	 * This task also tests the fighting element of a round of three shots
 	 */
 	public static void menu() {
@@ -66,8 +48,8 @@ public class Tasks {
 
 		System.out.print("> ");
 		Scanner in = new Scanner(System.in);
-		String command = in.next();
-		while (!command.equals(DESISTIR)) {
+		Command command = Command.fromKeyword(in.next());
+		while (command != Command.DESISTIR) {
 
 			switch (command) {
 				case GERAFROTA:
@@ -249,7 +231,7 @@ public class Tasks {
 					System.out.println("Que comando é esse??? Repete ...");
 			}
 			System.out.print("> ");
-			command = in.next();
+			command = Command.fromKeyword(in.next());
 		}
 
 		if (current != null && current.getOutcome() == null) {
@@ -276,19 +258,19 @@ public class Tasks {
 	public static void menuHelp() {
 		System.out.println("======================= AJUDA DO MENU =========================");
 		System.out.println("Digite um dos comandos abaixo para interagir com o jogo:");
-		System.out.println("- " + GERAFROTA + ": Gera uma frota aleatória de navios.");
-		System.out.println("- " + LEFROTA + ": Permite criar e carregar uma frota personalizada.");
-		System.out.println("- " + STATUS + ": Mostra o status atual da frota.");
-		System.out.println("- " + MAPA + ": Exibe o mapa da frota.");
-		System.out.println("- " + RAJADA + ": Realiza uma rajada de disparos.");
-		System.out.println("- " + SIMULA + ": Simula um jogo completo.");
-		System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
-		System.out.println("- " + HISTORICO + ": Exibe o histórico de partidas guardadas.");
-		System.out.println("- " + TUI + ": Exibe o tabuleiro gráfico no terminal.");
-		System.out.println("- " + TEMPO + ": Exibe o tempo que o jogador demorou para fazer a última rajada.");
-		System.out.println("- " + SCOREBOARD + ": Imprime dados do jogo na consola");
-		System.out.println("- " + PDF + ": Gera o ficheiro pdf com os dados que são impressos na consola no scoreboard");
-		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
+		System.out.println("- " + Command.GERAFROTA.getKeyword() + ": Gera uma frota aleatória de navios.");
+		System.out.println("- " + Command.LEFROTA.getKeyword() + ": Permite criar e carregar uma frota personalizada.");
+		System.out.println("- " + Command.STATUS.getKeyword() + ": Mostra o status atual da frota.");
+		System.out.println("- " + Command.MAPA.getKeyword() + ": Exibe o mapa da frota.");
+		System.out.println("- " + Command.RAJADA.getKeyword() + ": Realiza uma rajada de disparos.");
+		System.out.println("- " + Command.SIMULA.getKeyword() + ": Simula um jogo completo.");
+		System.out.println("- " + Command.TIROS.getKeyword() + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
+		System.out.println("- " + Command.HISTORICO.getKeyword() + ": Exibe o histórico de partidas guardadas.");
+		System.out.println("- " + Command.TUI.getKeyword() + ": Exibe o tabuleiro gráfico no terminal.");
+		System.out.println("- " + Command.TEMPO.getKeyword() + ": Exibe o tempo que o jogador demorou para fazer a última rajada.");
+		System.out.println("- " + Command.SCOREBOARD.getKeyword() + ": Imprime dados do jogo na consola");
+		System.out.println("- " + Command.PDF.getKeyword() + ": Gera o ficheiro pdf com os dados que são impressos na consola no scoreboard");
+		System.out.println("- " + Command.DESISTIR.getKeyword() + ": Encerra o jogo.");
 		System.out.println("===============================================================");
 	}
 	/**
