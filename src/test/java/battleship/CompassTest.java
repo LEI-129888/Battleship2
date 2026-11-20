@@ -33,6 +33,7 @@ public class CompassTest {
 	 * Cyclomatic Complexity: 1
 	 */
 	@Test
+	@DisplayName("Construtor cria uma instância de Compass não nula")
 	void constructor() {
 		assertNotNull(compass, "Error: Compass instance should not be null.");
 	}
@@ -42,6 +43,7 @@ public class CompassTest {
 	 * Cyclomatic Complexity: 1
 	 */
 	@Test
+	@DisplayName("getDirection devolve o carácter correto para cada direção")
 	void getDirection() {
 		assertEquals('n', Compass.NORTH.getDirection(), "Error: Direction for NORTH should be 'n'.");
 		assertEquals('s', Compass.SOUTH.getDirection(), "Error: Direction for SOUTH should be 's'.");
@@ -54,6 +56,7 @@ public class CompassTest {
 	 * Cyclomatic Complexity: 1
 	 */
 	@Test
+	@DisplayName("toString devolve a representação textual correta de cada direção")
 	void toStringTest() {
 		assertEquals("n", Compass.NORTH.toString(), "Error: String representation for NORTH should be 'n'.");
 		assertEquals("s", Compass.SOUTH.toString(), "Error: String representation for SOUTH should be 's'.");
@@ -66,6 +69,7 @@ public class CompassTest {
 	 * Cyclomatic Complexity: 4
 	 */
 	@Test
+	@DisplayName("charToCompass converte caracteres válidos na direção correspondente")
 	void charToCompass1() {
 		assertEquals(Compass.NORTH, Compass.charToCompass('n'), "Error: 'n' should map to Compass.NORTH.");
 		assertEquals(Compass.SOUTH, Compass.charToCompass('s'), "Error: 's' should map to Compass.SOUTH.");
@@ -77,6 +81,7 @@ public class CompassTest {
 	 * Test for the charToCompass method (invalid input).
 	 */
 	@Test
+	@DisplayName("charToCompass devolve null para um carácter inválido")
 	void charToCompass2() {
 		assertNull(Compass.charToCompass('x'), "Error: 'x' should map to null.");
 	}
@@ -85,7 +90,18 @@ public class CompassTest {
 	 * Test for the charToCompass method (null input).
 	 */
 	@Test
+	@DisplayName("charToCompass devolve null para o carácter nulo")
 	void charToCompass3() {
 		assertNull(Compass.charToCompass('\0'), "Error: Null character should map to null.");
+	}
+
+
+	/**
+	 * Test for the randomBearing method
+	 */
+	@Test
+	@DisplayName("randomBearing devolve uma direção não nula")
+	void randomBearing() {
+		assertNotNull( Compass.randomBearing(), "Error: This method should not return null.");
 	}
 }

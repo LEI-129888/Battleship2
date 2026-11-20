@@ -6,6 +6,10 @@ properties:
   project.open.type: Maven
 profile:
   path: .qodana/profiles/profile-129867.yaml
+exclude:
+  - name: All
+    paths:
+      - reports
 failureConditions:
   severityThresholds:
     any: 0
