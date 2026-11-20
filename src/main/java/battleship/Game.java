@@ -3,6 +3,7 @@ package battleship;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -237,6 +238,19 @@ public class Game implements IGame
 		// Criar uma instância de Random com uma seed baseada no timestamp atual
 		Random random = new Random(System.currentTimeMillis());
 
+		List<IPosition> shots = gerarRandomShots(random);
+
+		System.out.print("rajada ");
+		for (IPosition shot : shots)
+			System.out.print(shot + " ");
+		System.out.println();
+
+		this.fireShots(shots);
+
+		return Game.jsonShots(shots);
+	}
+
+	private @NotNull List<IPosition> gerarRandomShots(Random random) {
 		Set<IPosition> usablePositions = new HashSet<IPosition>();
 		for (int r = 0; r < BOARD_SIZE; r++)
 			for (int c = 0; c < BOARD_SIZE; c++)
@@ -247,37 +261,30 @@ public class Game implements IGame
 
 		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
 
-		// Criar lista para armazenar os tiros
-		List<IPosition> shots = new ArrayList<IPosition>();
+		return selectRandomShots(random, candidateShots);
+	}
 
+	private static @NotNull List<IPosition> selectRandomShots(Random random, List<IPosition> candidateShots) {
+		List<IPosition> shots = new ArrayList<IPosition>(); // Criar lista para armazenar os tiros
 		System.out.println();
-		// Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
 
-		IPosition newShot = null;
+		IPosition newShot = null; // Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
 		if (candidateShots.size() >= Game.NUMBER_SHOTS)
-			while (shots.size() < Game.NUMBER_SHOTS) {
-				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
-				if (!shots.contains(newShot))
-					shots.add(newShot);
-			}
+			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, newShot, candidateShots, random);
 		else {
-			while (shots.size() < candidateShots.size()) {
-				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
-				if (!shots.contains(newShot))
-					shots.add(newShot);
-			}
+			fillShotsFromCandidates(shots, candidateShots.size(), newShot, candidateShots, random);
 			while (shots.size() < Game.NUMBER_SHOTS)
 				shots.add(newShot);
 		}
+		return shots;
+	}
 
-		System.out.print("rajada ");
-		for (IPosition shot : shots)
-			System.out.print(shot + " ");
-		System.out.println();
-
-		this.fireShots(shots);
-
-		return Game.jsonShots(shots);
+	private static void fillShotsFromCandidates(List<IPosition> shots, int numberShots, IPosition newShot, List<IPosition> candidateShots, Random random) {
+		while (shots.size() < numberShots) {
+			newShot = candidateShots.get(random.nextInt(candidateShots.size()));
+			if (!shots.contains(newShot))
+				shots.add(newShot);
+		}
 	}
 
 
@@ -588,17 +595,9 @@ public class Game implements IGame
 
 		IPosition newShot = null;
 		if (candidateShots.size() >= Game.NUMBER_SHOTS)
-			while (shots.size() < Game.NUMBER_SHOTS) {
-				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
-				if (!shots.contains(newShot))
-					shots.add(newShot);
-			}
+			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, newShot, candidateShots, random);
 		else {
-			while (shots.size() < candidateShots.size()) {
-				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
-				if (!shots.contains(newShot))
-					shots.add(newShot);
-			}
+			fillShotsFromCandidates(shots, candidateShots.size(), newShot, candidateShots, random);
 			while (shots.size() < Game.NUMBER_SHOTS)
 				shots.add(newShot);
 		}
