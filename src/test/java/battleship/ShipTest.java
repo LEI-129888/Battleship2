@@ -300,6 +300,7 @@ public class ShipTest {
 
     @Test
     @DisplayName("Test tooCloseTo(IShip) returns true when ships are adjacent")
+    @SuppressWarnings("DataFlowIssue")
     void tooCloseToShip1() {
         Ship nearbyShip = new Barge(Compass.NORTH, new Position(5, 6));
         assertTrue(ship.tooCloseTo(nearbyShip), "Error: Ships should be too close.");
