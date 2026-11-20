@@ -51,7 +51,7 @@ public class Tasks {
 			Map.entry(Command.SCOREBOARD, Tasks::showScoreboard),
 			Map.entry(Command.TUI, Tasks::openTui),
 			Map.entry(Command.TEMPO, Tasks::printLastTime),
-			Map.entry(Command.DESCONHECIDO, Tasks::unknownCommand)
+			Map.entry(Command.DESCONHECIDO, session -> unknownCommand())
 	);
 
 	/**
@@ -350,9 +350,8 @@ public class Tasks {
 
 	/**
 	 * Avisa o utilizador de que o comando não existe
-	 * @param session sessão atual do menu
 	 */
-	private static void unknownCommand(MenuSession session) {
+	private static void unknownCommand() {
 		System.out.println("Que comando é esse??? Repete ...");
 	}
 
