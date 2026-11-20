@@ -14,8 +14,7 @@
 | `Caravel` | Duplication | Extract Method | 1298XX |
 | `Carrack` | Duplication | Extract Method | 1298XX |
 | `Frigate` | Duplication | Extract Method | 1298XX |
-| `BoardTUI::onEstado` | Data Flow & Redundancy | Inline Variable | 1298XX |
 | `Tasks::menu` | Parameters & Signatures | Replace Type with Object | 1298XX |
 | `Ship::buildShip` | Size & Complexity | Extract Method | 1298XX |
-| `BoardTUI::start` | Size & Complexity | Extract Method | 1298XX |
-
+| `Tasks::executeTurns` | Size & Complexity | Extract Method | 1298XX |
+| `Game::randomEnemyFire` | Size & Complexity | Extract Method | 1298XX |
