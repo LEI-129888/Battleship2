@@ -246,14 +246,6 @@ public class Fleet implements IFleet
     }
 
 	/**
-	 * This operation prints all the ships of a fleet but not yet shot
-	 */
-	public void printFloatingShips()
-    {
-	printShips(getFloatingShips());
-    }
-
-	/**
 	 * This operation prints all the ships of a fleet
 	 */
 	void printAllShips()
