@@ -108,6 +108,7 @@ public class ShipTest {
 
     @Test
     @DisplayName("Test buildShip throws AssertionError when shipKind is null")
+    @SuppressWarnings("DataFlowIssue")
     void buildShip7() {
         assertThrows(AssertionError.class,
                 () -> Ship.buildShip(null, Compass.NORTH, new Position(1, 1)),
@@ -300,7 +301,7 @@ public class ShipTest {
 
     @Test
     @DisplayName("Test tooCloseTo(IShip) returns true when ships are adjacent")
-    @SuppressWarnings("DataFlowIssue")
+
     void tooCloseToShip1() {
         Ship nearbyShip = new Barge(Compass.NORTH, new Position(5, 6));
         assertTrue(ship.tooCloseTo(nearbyShip), "Error: Ships should be too close.");
@@ -315,6 +316,7 @@ public class ShipTest {
 
     @Test
     @DisplayName("Test tooCloseTo(IShip) throws AssertionError when other ship is null")
+    @SuppressWarnings("DataFlowIssue")
     void tooCloseToShip3() {
         assertThrows(AssertionError.class, () -> ship.tooCloseTo((IShip) null),
                 "Error: expected AssertionError when other ship is null.");
