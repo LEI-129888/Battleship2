@@ -246,7 +246,7 @@ class MoveTest {
 
     @Test
     @DisplayName("processEnemyFire verbose descreve apenas tiros repetidos e tiros exteriores")
-    void processEnemyFire8() throws Exception {
+    void processEnemyFire8() {
         move = new Move(5, List.of(), List.of(
                 new IGame.ShotResult(true, true, null, false)));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -274,7 +274,7 @@ class MoveTest {
 
     @Test
     @DisplayName("processEnemyFire verbose formata um resumo misto de tiros")
-    void processEnemyFire9() throws Exception {
+    void processEnemyFire9() {
         move = new Move(6, List.of(), List.of(
                 new IGame.ShotResult(true, false, null, false),
                 new IGame.ShotResult(true, false, null, false),
@@ -302,7 +302,7 @@ class MoveTest {
 
     @Test
     @DisplayName("processEnemyFire verbose trata corretamente um resultado sem resumo")
-    void processEnemyFire10() throws Exception {
+    void processEnemyFire10() {
         move = new Move(7, List.of(), List.of(
                 new IGame.ShotResult(false, false, null, false),
                 new IGame.ShotResult(false, false, null, false),
@@ -371,7 +371,7 @@ class MoveTest {
     }
     @Test
     @DisplayName("processEnemyFire verbose formata plurais de múltiplos barcos afundados/atingidos sem tiros na água")
-    void processEnemyFireVerbosePluraisESemAgua() throws Exception {
+    void processEnemyFireVerbosePluraisESemAgua() {
         //Simula a situação onde a string "+ " no final tem de ser removida (porque missedShots == 0)
         // e garante a passagem no "count > 1 ? s : "
         IShip barca = ship("Barca");
@@ -465,6 +465,7 @@ class MoveTest {
         return new ObjectMapper().readTree(text);
     }
 
+    @SuppressWarnings("SuspiciousInvocationHandlerImplementation")
     private static IShip ship(String category) {
         return (IShip) java.lang.reflect.Proxy.newProxyInstance(
                 IShip.class.getClassLoader(),

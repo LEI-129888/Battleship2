@@ -48,9 +48,7 @@ import battleship.history.GameRecord;
 @SuppressWarnings({
         "InstantiationOfUtilityClass",
         "SuspiciousInvocationHandlerImplementation",
-        "DataFlowIssue",
         "BusyWait",
-        "ResultOfMethodCallIgnored",
         "OverlyLongMethod"
 })
 class TasksTest {
@@ -699,27 +697,7 @@ class TasksTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         Thread testThread = Thread.currentThread();
-        Thread interrupter = new Thread(() -> {
-            long deadline = System.currentTimeMillis() + 30_000;
-            while (System.currentTimeMillis() < deadline && !Thread.currentThread().isInterrupted()) {
-                // Assim que o 1º turno termina e imprime o tempo, está a entrar no Thread.sleep(3000)
-                if (output.toString(StandardCharsets.UTF_8).contains("Tempo da jogada:")) {
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException ignored) {
-                        return;
-                    }
-                    testThread.interrupt();
-                    return;
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ignored) {
-                    return;
-                }
-            }
-        });
-        interrupter.setDaemon(true);
+        Thread interrupter = criaInterruptorDeSimulacao(testThread, output);
         interrupter.start();
 
         String input = "gerafrota\nsimula\ndesisto\n";
@@ -748,6 +726,30 @@ class TasksTest {
                             "Error: expected menu to exit cleanly after interrupting simulation.")
             );
         }
+    }
+
+    private static Thread criaInterruptorDeSimulacao(Thread testThread, ByteArrayOutputStream output) {
+        Thread interrupter = new Thread(() -> {
+            long deadline = System.currentTimeMillis() + 30_000;
+            while (System.currentTimeMillis() < deadline && !Thread.currentThread().isInterrupted()) {
+                if (output.toString(StandardCharsets.UTF_8).contains("Tempo da jogada:")) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException ignored) {
+                        return;
+                    }
+                    testThread.interrupt();
+                    return;
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {
+                    return;
+                }
+            }
+        });
+        interrupter.setDaemon(true);
+        return interrupter;
     }
 
     @Test
