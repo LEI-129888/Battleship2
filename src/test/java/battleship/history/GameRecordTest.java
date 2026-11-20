@@ -1,10 +1,6 @@
 package battleship.history;
 
-import battleship.IGame;
-import battleship.IShip;
-import battleship.IMove;
-import battleship.Move;
-import battleship.Position;
+import battleship.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -112,11 +108,7 @@ class GameRecordTest {
     @Test
     @DisplayName("addMove counts a shot that hits a ship")
     void addMove4() {
-        IShip ship = (IShip) Proxy.newProxyInstance(
-                IShip.class.getClassLoader(),
-                new Class<?>[]{IShip.class},
-                (proxy, method, args) -> null
-        );
+        IShip ship = new Barge(Compass.NORTH, new Position(0,0));
         IMove move = new Move(1, List.of(new Position(4, 1)),
                 List.of(new IGame.ShotResult(true, false, ship, false)));
 

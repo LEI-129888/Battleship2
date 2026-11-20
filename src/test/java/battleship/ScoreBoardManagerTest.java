@@ -36,6 +36,7 @@ class ScoreBoardManagerTest {
     private boolean originalFileExisted;
 
     @BeforeEach
+    @SuppressWarnings("InstantiationOfUtilityClass")
     void setUp() throws IOException {
         scoreBoardManager = new ScoreBoardManager();
         backupFile = tempDir.resolve("scoreboard-original.csv");

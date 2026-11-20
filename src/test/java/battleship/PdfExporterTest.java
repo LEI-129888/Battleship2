@@ -28,6 +28,7 @@ class PdfExporterTest {
     private PdfExporter exporter;
 
     @BeforeEach
+    @SuppressWarnings("InstantiationOfUtilityClass")
     void setUp() {
         exporter = new PdfExporter();
     }
@@ -59,7 +60,7 @@ class PdfExporterTest {
 
     @Test
     @DisplayName("exportMovesToPdf exporta várias jogadas, percorrendo a lista")
-    void exportMovesToPdf2(@TempDir Path tempDir) throws Exception {
+    void exportMovesToPdf2(@TempDir Path tempDir) {
         List<IMove> moves = List.of(
                 new Move(1, List.of(new Position(1, 1)), List.of()),
                 new Move(2, List.of(new Position(2, 2)), List.of())

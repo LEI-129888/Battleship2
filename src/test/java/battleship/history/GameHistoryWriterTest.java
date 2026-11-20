@@ -48,7 +48,7 @@ class GameHistoryWriterTest {
     @Test
     @DisplayName("O construtor sem argumentos cria um writer")
     void constructor() {
-        assertNotNull(new GameHistoryWriter(),
+        assertDoesNotThrow(() -> new GameHistoryWriter(),
                 "Error: expected the no-argument constructor to create a writer.");
     }
 
@@ -90,7 +90,7 @@ class GameHistoryWriterTest {
         assertAll(
                 () -> assertEquals(1, records.size(),
                         "Error: expected one record to be loaded from valid JSON."),
-                () -> assertEquals("Vitoria", records.get(0).getOutcome(),
+                () -> assertEquals("Vitoria", records.getFirst().getOutcome(),
                         "Error: expected the loaded record to retain its outcome.")
         );
     }

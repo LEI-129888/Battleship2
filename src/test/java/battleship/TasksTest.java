@@ -44,6 +44,15 @@ import battleship.history.GameRecord;
  * - executeTurns(): 5
  * - endGame(): 6 (covered up to game.over(); System.exit(0) is not reachable in JUnit))
  */
+
+@SuppressWarnings({
+        "InstantiationOfUtilityClass",
+        "SuspiciousInvocationHandlerImplementation",
+        "DataFlowIssue",
+        "BusyWait",
+        "ResultOfMethodCallIgnored",
+        "OverlyLongMethod"
+})
 class TasksTest {
 
     @TempDir
@@ -255,7 +264,7 @@ class TasksTest {
         assertAll(
                 () -> assertEquals(2, shots.size(),
                         "Error: expected both coordinates in the JSON to be parsed."),
-                () -> assertEquals(new Position(0, 0), shots.get(0),
+                () -> assertEquals(new Position(0, 0), shots.getFirst(),
                         "Error: expected coordinate A1 to map to row 0 and column 0."),
                 () -> assertEquals(new Position(2, 3), shots.get(1),
                         "Error: expected coordinate C4 to map to row 2 and column 3.")
@@ -573,15 +582,16 @@ class TasksTest {
         IGame game = (IGame) Proxy.newProxyInstance(
                 IGame.class.getClassLoader(),
                 new Class<?>[]{IGame.class},
-                (proxy, method, args) -> {
-                    switch (method.getName()) {
-                        case "getAlienFleet": return enemyFleet;
-                        case "getHits": return 0;
-                        case "setLastTime": recordedTime.set((long) args[0]); return null;
-                        case "getLastTime": return recordedTime.get();
-                        case "getAlienMoves": return alienMoves;
-                        default: return null;
+                (proxy, method, args) -> switch (method.getName()) {
+                    case "getAlienFleet" -> enemyFleet;
+                    case "getHits" -> 0;
+                    case "setLastTime" -> {
+                        recordedTime.set((long) args[0]);
+                        yield null;
                     }
+                    case "getLastTime" -> recordedTime.get();
+                    case "getAlienMoves" -> alienMoves;
+                    default -> null;
                 }
         );
 
@@ -619,13 +629,15 @@ class TasksTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         // 1 rajada com 3 tiros válidos, seguida de tempo, pdf, scoreboard e desisto
-        String input = "gerafrota\n"
-                + "rajada\n"
-                + "A1 A2 A3\n"
-                + "tempo\n"
-                + "pdf\n"
-                + "scoreboard\n"
-                + "desisto\n";
+        String input = """
+                gerafrota
+                rajada
+                A1 A2 A3
+                tempo
+                pdf
+                scoreboard
+                desisto
+                """;
         boolean completed;
 
         try (PrintStream capturedOutput = new PrintStream(output, true, StandardCharsets.UTF_8)) {
@@ -719,7 +731,9 @@ class TasksTest {
             completed = runMenuHandlingMissingAi();
         } finally {
             interrupter.interrupt();
-            Thread.interrupted(); // limpa o estado de interrupção da thread
+            if (Thread.interrupted()) { // limpa o estado de interrupção da thread
+                assertFalse(Thread.currentThread().isInterrupted());
+            }
             System.setIn(originalInput);
             System.setOut(originalOutput);
             restoreFile(historyFile, historyBackup, historyExisted);
@@ -770,7 +784,7 @@ class TasksTest {
 
     @Test
     @DisplayName("endGame ignora gravação quando o registo é nulo")
-    void endGameComRecordNulo() throws Exception {
+    void endGameComRecordNulo() {
         assertDoesNotThrow(() -> invokeEndGameStoppingAtOver(0, List.of(), List.of(), null),
                 "Error: expected endGame to handle a null GameRecord.");
     }
@@ -797,14 +811,12 @@ class TasksTest {
         IGame game = (IGame) Proxy.newProxyInstance(
                 IGame.class.getClassLoader(),
                 new Class<?>[]{IGame.class},
-                (proxy, method, args) -> {
-                    switch (method.getName()) {
-                        case "getRemainingShips": return remainingShips;
-                        case "getMyMoves": return myMoves;
-                        case "getAlienMoves": return alienMoves;
-                        case "over": throw new IllegalStateException("stop-before-system-exit");
-                        default: return null;
-                    }
+                (proxy, method, args) -> switch(method.getName()) {
+                    case "getRemainingShips" -> remainingShips;
+                    case "getMyMoves" -> myMoves;
+                    case "getAlienMoves" -> alienMoves;
+                    case "over" -> throw new IllegalStateException("stop-before-system-exit");
+                    default-> null;
                 }
         );
 
@@ -882,20 +894,15 @@ class TasksTest {
         IGame game = (IGame) Proxy.newProxyInstance(
                 IGame.class.getClassLoader(),
                 new Class<?>[]{IGame.class},
-                (proxy, method, args) -> {
-                    switch (method.getName()) {
-                        case "getAlienFleet":
-                            return enemyFleet;
-                        case "getHits":
-                            return 0;
-                        case "setLastTime":
-                            recordedTime.set((long) args[0]);
-                            return null;
-                        case "getLastTime":
-                            return recordedTime.get();
-                        default:
-                            return null;
+                (proxy, method, args) -> switch (method.getName()) {
+                    case "getAlienFleet" -> enemyFleet;
+                    case "getHits" -> 0;
+                    case "setLastTime" -> {
+                        recordedTime.set((long) args[0]);
+                        yield null;
                     }
+                    case "getLastTime" -> recordedTime.get();
+                    default -> null;
                 }
         );
         StopWatch timer = new StopWatch();
