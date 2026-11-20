@@ -119,8 +119,7 @@ public class Tasks {
 							String playerAiShotsJson = playerAi.nextShot(lastPlayerAiResult);
 							if (playerAiShotsJson != null) {
 								try {
-									List<IPosition> playerShots = parseAiShots(playerAiShotsJson);
-									game.firePlayerShots(playerShots);
+                                    game.firePlayerShots(parseAiShots(playerAiShotsJson));
 								} catch (Exception e) {
 									game.randomPlayerFire();
 								}
@@ -152,8 +151,7 @@ public class Tasks {
 							String enemyAiShotsJson = ai.nextShot(lastAiResult);
 							if (enemyAiShotsJson != null) {
 								try {
-									List<IPosition> enemyShots = parseAiShots(enemyAiShotsJson);
-									game.fireShots(enemyShots);
+                                    game.fireShots(parseAiShots(enemyAiShotsJson));
 								} catch (Exception e) {
 									game.randomEnemyFire();
 								}
@@ -230,8 +228,7 @@ public class Tasks {
 
 				case TUI:
 					if (game != null) {
-						BoardTUI tui = new BoardTUI((Game) game, current, historyWriter, ai);
-						tui.start();
+						new BoardTUI((Game) game, current, historyWriter, ai).start();
 					} else
 						System.out.println("Ainda não iniciou nenhum jogo.");
 					break;
