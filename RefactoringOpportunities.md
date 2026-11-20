@@ -16,3 +16,6 @@
 | `Frigate` | Duplication | Extract Method | 1298XX |
 | `BoardTUI::onEstado` | Data Flow & Redundancy | Inline Variable | 1298XX |
 | `Tasks::menu` | Parameters & Signatures | Replace Type with Object | 1298XX |
+| `Ship::buildShip` | Size & Complexity | Extract Method | 1298XX |
+| `BoardTUI::start` | Size & Complexity | Extract Method | 1298XX |
+
