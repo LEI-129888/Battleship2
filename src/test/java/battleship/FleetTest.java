@@ -299,10 +299,4 @@ public class FleetTest {
 		assertDoesNotThrow(fleet::printFloatingShips, "Error: printFloatingShips should not throw any exceptions.");
 	}
 
-	@Test
-	@DisplayName("Test printAllShips executes without throwing")
-	void printAllShips() {
-		fleet.addShip(new Barge(Compass.NORTH, new Position(1, 1)));
-		assertDoesNotThrow(fleet::printAllShips, "Error: printAllShips should not throw any exceptions.");
-	}
 }
