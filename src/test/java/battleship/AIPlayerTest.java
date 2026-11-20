@@ -23,6 +23,23 @@ import static org.junit.jupiter.api.Assertions.*;
 class AIPlayerTest {
 
     private AIPlayer aiPlayer;
+    private static final java.nio.file.Path ENV_PATH = java.nio.file.Path.of(".env");
+    private static boolean createdTempEnv = false;
+
+    @org.junit.jupiter.api.BeforeAll
+    static void ensureEnvFileExists() throws java.io.IOException {
+        if (!java.nio.file.Files.exists(ENV_PATH)) {
+            java.nio.file.Files.writeString(ENV_PATH, "GOOGLE_API=dummy-test-key\n");
+            createdTempEnv = true;
+        }
+    }
+
+    @org.junit.jupiter.api.AfterAll
+    static void cleanUpTempEnvFile() throws java.io.IOException {
+        if (createdTempEnv) {
+            java.nio.file.Files.deleteIfExists(ENV_PATH);
+        }
+    }
 
     @BeforeEach
     void setUp() {
