@@ -141,8 +141,6 @@ public abstract class Ship implements IShip
     }
 
 	/**
-	 * The Positions occupied by the ship.
-	 */ /**
 	 * Gets positions.
 	 *
 	 * @return the positions
