@@ -1,7 +1,5 @@
 package battleship;
 
-import java.util.List;
-
 /**
  * The type Carrack represents a ship with a size of 3 units.
  * It is positioned on the game board based on its bearing and initial position.
@@ -22,22 +20,32 @@ public class Carrack extends Ship {
 		super("Nau", bearing, pos, 3);
 
 		switch (bearing) {
-			case SOUTH:
-				for (int r = 0; r < this.getSize(); r++)
-					getPositions().add(new Position(pos.getRow() + r, pos.getColumn()));
+			case SOUTH, NORTH:
+				addVerticalPositions(pos);
 				break;
-			case NORTH:
-				for (int r = 0; r < this.getSize(); r++)
-					getPositions().add(new Position(pos.getRow() + r, pos.getColumn()));
+            case EAST, WEST:
+				addHorizontalPositions(pos);
 				break;
-			case EAST:
-				for (int c = 0; c < this.getSize(); c++)
-					getPositions().add(new Position(pos.getRow(), pos.getColumn() + c));
-				break;
-			case WEST:
-				for (int c = 0; c < this.getSize(); c++)
-					getPositions().add(new Position(pos.getRow(), pos.getColumn() + c));
-				break;
-		}
+        }
+	}
+
+	/**
+	 * Adds the ship's positions horizontally, starting at the given position.
+	 *
+	 * @param pos the initial position of the ship
+	 */
+	private void addHorizontalPositions(IPosition pos) {
+		for (int c = 0; c < this.getSize(); c++)
+			getPositions().add(new Position(pos.getRow(), pos.getColumn() + c));
+	}
+
+	/**
+	 * Adds the ship's positions vertically, starting at the given position.
+	 *
+	 * @param pos the initial position of the ship
+	 */
+	private void addVerticalPositions(IPosition pos) {
+		for (int r = 0; r < this.getSize(); r++)
+			getPositions().add(new Position(pos.getRow() + r, pos.getColumn()));
 	}
 }

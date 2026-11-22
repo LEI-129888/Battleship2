@@ -11,6 +11,13 @@ import java.util.List;
  */
 public class Fleet implements IFleet
 {
+
+	public static final String GALEAO = "galeao";
+	public static final String FRAGATA = "fragata";
+	public static final String NAU = "nau";
+	public static final String CARAVELA = "caravela";
+	public static final String BARCA = "barca";
+
 	/**
 	 * Creates a randomly generated fleet containing ships of various predefined types.
 	 * Each ship is assigned a random bearing and position. If a ship cannot be added
@@ -24,11 +31,12 @@ public class Fleet implements IFleet
 
 		// Define the types of ships to be added
 		String[] shipTypes =
-					{"galeao",                           // 1 galleon
-				 	"fragata",                           // 1 frigate
- 				 	"nau", "nau",                        // 2 carracks
-					"caravela", "caravela", "caravela",  // 3 caravels
-					"barca", "barca", "barca", "barca"}; // 4 barges
+					{GALEAO,                           // 1 galleon
+							FRAGATA,                           // 1 frigate
+ 				 	NAU, NAU,                        // 2 carracks
+							CARAVELA, CARAVELA, CARAVELA,  // 3 caravels
+							BARCA,
+							BARCA, BARCA, BARCA}; // 4 barges
 
 		int fleetSize = 0;
 
@@ -90,7 +98,7 @@ public class Fleet implements IFleet
 		assert s != null;
 
 		boolean result = false;
-		if ((ships.size() <= FLEET_SIZE) && (s.isInsideBoard()) && (!colisionRisk(s)))
+		if ((ships.size() <= FLEET_SIZE) && (s.isInsideBoard()) && (isCollisionFree(s)))
 		{
 			ships.add(s);
 			result = true;
@@ -187,21 +195,21 @@ public class Fleet implements IFleet
     }
 
 	/**
-	 * Colision risk boolean.
+	 * Checks whether the ship can be placed without being too close to any ship in the fleet.
 	 *
 	 * @param s the s
 	 * @return the boolean
 	 */
-	private boolean colisionRisk(IShip s)
+	private boolean isCollisionFree(IShip s)
     {
 		assert s != null;
 
 		for (int i = 0; i < ships.size(); i++)
 		{
 			if (ships.get(i).tooCloseTo(s))
-				return true;
+				return false;
 		}
-		return false;
+		return true;
     }
 
 	/**
@@ -223,34 +231,6 @@ public class Fleet implements IFleet
 	public void printStatus()
     {
 		System.out.println("Estado da Frota: " + this.getFloatingShips().size() + " a flutuar, " + this.getSunkShips().size() + " afundados!");
-//		printAllShips();
-//		printFloatingShips();
-//		printShipsByCategory("Galeao");
-//		printShipsByCategory("Fragata");
-//		printShipsByCategory("Nau");
-//		printShipsByCategory("Caravela");
-//		printShipsByCategory("Barca");
+
     }
-
-	/**
-	 * This operation prints all the ships of a fleet belonging to a particular
-	 * category
-	 *
-	 * @param category The category of ships of interest
-	 */
-	public void printShipsByCategory(String category)
-    {
-		assert category != null;
-
-		printShips(getShipsLike(category));
-    }
-
-	/**
-	 * This operation prints all the ships of a fleet but not yet shot
-	 */
-	public void printFloatingShips()
-    {
-	printShips(getFloatingShips());
-    }
-
 }
