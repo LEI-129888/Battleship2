@@ -82,10 +82,8 @@ public enum Compass
 	 */
 	static Compass charToCompass(char ch)
     {
-        Compass bearing;
-		bearing = getBearing(ch);
 
-		return bearing;
+        return getBearing(ch);
     }
 
 	private static @Nullable Compass getBearing(char ch) {
