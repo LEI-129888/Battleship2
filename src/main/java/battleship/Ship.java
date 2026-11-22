@@ -100,7 +100,7 @@ public abstract class Ship implements IShip
 	 */
 	private final Integer size;
 
-	private List<IPosition> positions;
+	private final List<IPosition> positions;
 
 	/**
 	 * Create ships
