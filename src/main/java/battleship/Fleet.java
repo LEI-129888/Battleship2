@@ -233,20 +233,6 @@ public class Fleet implements IFleet
 		System.out.println("Estado da Frota: " + this.getFloatingShips().size() + " a flutuar, " + this.getSunkShips().size() + " afundados!");
 
     }
-
-	/**
-	 * This operation prints all the ships of a fleet belonging to a particular
-	 * category
-	 *
-	 * @param category The category of ships of interest
-	 */
-	public void printShipsByCategory(String category)
-    {
-		assert category != null;
-
-		printShips(getShipsLike(category));
-    }
-
 	/**
 	 * This operation prints all the ships of a fleet
 	 */
