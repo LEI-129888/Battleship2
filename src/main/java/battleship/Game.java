@@ -270,18 +270,18 @@ public class Game implements IGame
 
 		IPosition newShot = null; // Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
 		if (candidateShots.size() >= Game.NUMBER_SHOTS)
-			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, newShot, candidateShots, random);
+			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, candidateShots, random);
 		else {
-			fillShotsFromCandidates(shots, candidateShots.size(), newShot, candidateShots, random);
+			fillShotsFromCandidates(shots, candidateShots.size(), candidateShots, random);
 			while (shots.size() < Game.NUMBER_SHOTS)
 				shots.add(newShot);
 		}
 		return shots;
 	}
 
-	private static void fillShotsFromCandidates(List<IPosition> shots, int numberShots, IPosition newShot, List<IPosition> candidateShots, Random random) {
+	private static void fillShotsFromCandidates(List<IPosition> shots, int numberShots, List<IPosition> candidateShots, Random random) {
 		while (shots.size() < numberShots) {
-			newShot = candidateShots.get(random.nextInt(candidateShots.size()));
+			IPosition newShot = candidateShots.get(random.nextInt(candidateShots.size()));
 			if (!shots.contains(newShot))
 				shots.add(newShot);
 		}
@@ -595,9 +595,9 @@ public class Game implements IGame
 
 		IPosition newShot = null;
 		if (candidateShots.size() >= Game.NUMBER_SHOTS)
-			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, newShot, candidateShots, random);
+			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, candidateShots, random);
 		else {
-			fillShotsFromCandidates(shots, candidateShots.size(), newShot, candidateShots, random);
+			fillShotsFromCandidates(shots, candidateShots.size(), candidateShots, random);
 			while (shots.size() < Game.NUMBER_SHOTS)
 				shots.add(newShot);
 		}
