@@ -50,8 +50,7 @@ public abstract class Ship implements IShip
 		assert bearing != null;
 		assert pos != null;
 
-		Ship s = createShipByKind(shipKind, bearing, pos);
-		return s;
+        return createShipByKind(shipKind, bearing, pos);
     }
 
 	private static @Nullable Ship createShipByKind(String shipKind, Compass bearing, Position pos) {

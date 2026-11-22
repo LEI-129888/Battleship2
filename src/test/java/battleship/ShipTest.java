@@ -316,7 +316,6 @@ public class ShipTest {
 
     @Test
     @DisplayName("Test tooCloseTo(IShip) throws AssertionError when other ship is null")
-    @SuppressWarnings("DataFlowIssue")
     void tooCloseToShip3() {
         assertThrows(AssertionError.class, () -> ship.tooCloseTo((IShip) null),
                 "Error: expected AssertionError when other ship is null.");
