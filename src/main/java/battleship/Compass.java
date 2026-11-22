@@ -1,5 +1,7 @@
 package battleship;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * The enum Compass.
  *
@@ -80,25 +82,17 @@ public enum Compass
 	 */
 	static Compass charToCompass(char ch)
     {
-        Compass bearing;
-        switch (ch)
-        {
-        case 'n':
-            bearing = NORTH;
-            break;
-        case 's':
-            bearing = SOUTH;
-            break;
-        case 'e':
-            bearing = EAST;
-            break;
-        case 'o':
-            bearing = WEST;
-            break;
-        default:
-            bearing = null;
-        }
-    
-        return bearing;
+
+        return getBearing(ch);
     }
+
+	private static @Nullable Compass getBearing(char ch) {
+		return switch (ch) {
+			case 'n' -> NORTH;
+			case 's' -> SOUTH;
+			case 'e' -> EAST;
+			case 'o' -> WEST;
+			default -> null;
+		};
+	}
 }
