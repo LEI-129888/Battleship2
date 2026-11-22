@@ -11,6 +11,13 @@ import java.util.List;
  */
 public class Fleet implements IFleet
 {
+
+	public static final String GALEAO = "galeao";
+	public static final String FRAGATA = "fragata";
+	public static final String NAU = "nau";
+	public static final String CARAVELA = "caravela";
+	public static final String BARCA = "barca";
+
 	/**
 	 * Creates a randomly generated fleet containing ships of various predefined types.
 	 * Each ship is assigned a random bearing and position. If a ship cannot be added
@@ -24,11 +31,12 @@ public class Fleet implements IFleet
 
 		// Define the types of ships to be added
 		String[] shipTypes =
-					{"galeao",                           // 1 galleon
-				 	"fragata",                           // 1 frigate
- 				 	"nau", "nau",                        // 2 carracks
-					"caravela", "caravela", "caravela",  // 3 caravels
-					"barca", "barca", "barca", "barca"}; // 4 barges
+					{GALEAO,                           // 1 galleon
+							FRAGATA,                           // 1 frigate
+ 				 	NAU, NAU,                        // 2 carracks
+							CARAVELA, CARAVELA, CARAVELA,  // 3 caravels
+							BARCA,
+							BARCA, BARCA, BARCA}; // 4 barges
 
 		int fleetSize = 0;
 

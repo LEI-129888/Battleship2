@@ -18,3 +18,6 @@
 | `Ship::buildShip` | Size & Complexity | Extract Method | 129865          |
 | `Tasks::executeTurns` | Size & Complexity | Extract Method | 129888          |
 | `Game::randomEnemyFire` | Size & Complexity | Extract Method | 129865          |
+| `Compass::charToCompass` | Data Flow & Redundancy | Inline Variable | 129867 |
+| `Ship::getAdjacentPositions` | Expressions & Conditionals | Introduce Variable | 129867 |
+| `Fleet::createRandom` | Duplication | Replace with Constant | 129867 |
