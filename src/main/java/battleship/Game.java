@@ -582,6 +582,18 @@ public class Game implements IGame
 
 	public String randomPlayerFire() {
 		Random random = new Random(System.currentTimeMillis());
+		Set<IPosition> usablePositions = getUsablePositions();
+
+		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
+		List<IPosition> shots = selectRandomShots(random, candidateShots);
+
+		printAutoShots(shots);
+
+		this.firePlayerShots(shots);
+		return Game.jsonShots(shots);
+	}
+
+	private @NotNull Set<IPosition> getUsablePositions() {
 		Set<IPosition> usablePositions = new HashSet<IPosition>();
 		for (int r = 0; r < BOARD_SIZE; r++)
 			for (int c = 0; c < BOARD_SIZE; c++)
@@ -589,25 +601,13 @@ public class Game implements IGame
 
 		this.alienFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
 		this.myMoves.forEach(move -> usablePositions.removeAll(move.getShots()));
+		return usablePositions;
+	}
 
-		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
-		List<IPosition> shots = new ArrayList<IPosition>();
-
-		if (candidateShots.size() >= Game.NUMBER_SHOTS)
-			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, candidateShots, random);
-		else {
-			fillShotsFromCandidates(shots, candidateShots.size(), candidateShots, random);
-			IPosition lastShot = shots.getLast();
-			while (shots.size() < Game.NUMBER_SHOTS)
-				shots.add(lastShot);
-		}
-
+	private static void printAutoShots(List<IPosition> shots) {
 		System.out.print("rajada jogador (auto) ");
 		for (IPosition shot : shots)
 			System.out.print(shot + " ");
 		System.out.println();
-
-		this.firePlayerShots(shots);
-		return Game.jsonShots(shots);
 	}
 }
