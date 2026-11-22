@@ -3,6 +3,8 @@
  */
 package battleship;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,31 +50,21 @@ public abstract class Ship implements IShip
 		assert bearing != null;
 		assert pos != null;
 
-        Ship s;
-        switch (shipKind)
-        {
-        case BARCA:
-            s = new Barge(bearing, pos);
-			break;
-        case CARAVELA:
-            s = new Caravel(bearing, pos);
-			break;
-        case NAU:
-            s = new Carrack(bearing, pos);
-			break;
-        case FRAGATA:
-            s = new Frigate(bearing, pos);
-			break;
-        case GALEAO:
-            s = new Galleon(bearing, pos);
-			break;
-        default:
-            s = null;
-        }
-        return s;
+        return createShipByKind(shipKind, bearing, pos);
     }
 
-    //---------------------------------------------------------
+	private static @Nullable Ship createShipByKind(String shipKind, Compass bearing, Position pos) {
+		return switch (shipKind) {
+			case BARCA -> new Barge(bearing, pos);
+			case CARAVELA -> new Caravel(bearing, pos);
+			case FRAGATA -> new Frigate(bearing, pos);
+			case GALEAO -> new Galleon(bearing, pos);
+			case NAU -> new Carrack(bearing, pos);
+			default -> null;
+		};
+	}
+
+	//---------------------------------------------------------
 
 	/**
 	 * The Category.
@@ -94,10 +86,7 @@ public abstract class Ship implements IShip
 	 */
 	private final Integer size;
 
-	/**
-	 * The Positions occupied by the ship.
-	 */
-	protected List<IPosition> positions;
+	private final List<IPosition> positions;
 
 	/**
 	 * Create ships
@@ -246,7 +235,7 @@ public abstract class Ship implements IShip
 	int top = getPositions().get(0).getRow();
 	for (int i = 1; i < getSize(); i++)
 	    if (getPositions().get(i).getRow() < top)
-		top = getPositions().get(i).getRow();
+			top = getPositions().get(i).getRow();
 	return top;
     }
 
@@ -306,7 +295,7 @@ public abstract class Ship implements IShip
 	int right = getPositions().get(0).getColumn();
 	for (int i = 1; i < getSize(); i++)
 	    if (getPositions().get(i).getColumn() > right)
-		right = getPositions().get(i).getColumn();
+			right = getPositions().get(i).getColumn();
 	return right;
     }
 
@@ -380,11 +369,10 @@ public abstract class Ship implements IShip
 
 	public boolean isInsideBoard()
 	{
-		assert this != null;
-
-		return (getLeftMostPos() >= 0 && getRightMostPos() <= Game.BOARD_SIZE - 1 && getTopMostPos() >= 0
-				&& getBottomMostPos() <= Game.BOARD_SIZE - 1);
+		boolean PositionInBounds = getLeftMostPos() >= 0 && getRightMostPos() <= Game.BOARD_SIZE - 1;
+		return (PositionInBounds && getTopMostPos() >= 0 && getBottomMostPos() <= Game.BOARD_SIZE - 1);
 	}
+
 	/**
 	 * Shoot.
 	 *
