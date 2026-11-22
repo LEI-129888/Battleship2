@@ -18,3 +18,4 @@
 | `Tasks::executeTurns` | Long Method             | Extract Method | 129888          |
 | `Game::randomEnemyFire` | Long Method             | Extract Method | 129865          |
 | `Ship::positions` | Encapsulate Fields   | 129865 |
+| `Game::fillShotsFromCandidates` | Change Signature | 129865 |
