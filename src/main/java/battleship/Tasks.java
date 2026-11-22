@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import battleship.history.GameRecord;
 import battleship.history.GameHistoryWriter;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * The type Tasks.
@@ -33,244 +35,354 @@ public class Tasks {
 	private static final String ALARM = "alarm";
 
 	/**
-	 * Strings to be used by the user
+	 * The action executed by each menu command.
 	 */
-	private static final String AJUDA = "ajuda";
-	private static final String GERAFROTA = "gerafrota";
-	private static final String LEFROTA = "lefrota";
-	private static final String DESISTIR = "desisto";
-	private static final String RAJADA = "rajada";
-	private static final String TIROS = "tiros";
-	private static final String MAPA = "mapa";
-	private static final String STATUS = "estado";
-	private static final String SIMULA = "simula";
-	private static final String HISTORICO = "historico"; //devemos poder ver um histórico dos jogos a partir do menu
-	private static final String PDF = "pdf";
-	private static final String SCOREBOARD = "scoreboard";
-	private static final String TUI = "tui";
-	private static final String TEMPO = "tempo";
+	private static final Map<Command, Consumer<MenuSession>> COMMAND_ACTIONS = Map.ofEntries(
+			Map.entry(Command.GERAFROTA, Tasks::generateFleet),
+			Map.entry(Command.LEFROTA, Tasks::loadFleet),
+			Map.entry(Command.STATUS, Tasks::printFleetStatus),
+			Map.entry(Command.MAPA, Tasks::printMap),
+			Map.entry(Command.RAJADA, Tasks::fireSalvo),
+			Map.entry(Command.SIMULA, Tasks::simulate),
+			Map.entry(Command.TIROS, Tasks::printShots),
+			Map.entry(Command.AJUDA, session -> menuHelp()),
+			Map.entry(Command.HISTORICO, Tasks::printHistory),
+			Map.entry(Command.PDF, Tasks::exportPdf),
+			Map.entry(Command.SCOREBOARD, Tasks::showScoreboard),
+			Map.entry(Command.TUI, Tasks::openTui),
+			Map.entry(Command.TEMPO, Tasks::printLastTime),
+			Map.entry(Command.DESCONHECIDO, session -> unknownCommand())
+	);
 
 	/**
 	 * This task also tests the fighting element of a round of three shots
 	 */
 	public static void menu() {
 
-		IFleet myFleet = null;
-		IGame game = null;
-		StopWatch timer = new StopWatch();
-		GameHistoryWriter historyWriter = new GameHistoryWriter(); //para escrever o historico
-		GameRecord current = null; //guardar este jogo
-		AIPlayer ai = new AIPlayer();
-		String lastAiResult = "";
+		MenuSession session = new MenuSession(new Scanner(System.in));
 		menuHelp();
 
 		System.out.print("> ");
-		Scanner in = new Scanner(System.in);
-		String command = in.next();
-		while (!command.equals(DESISTIR)) {
-
-			switch (command) {
-				case GERAFROTA:
-					myFleet = Fleet.createRandom();
-					game = new Game(myFleet);
-					current =  new GameRecord(); //inicializa o registo do jogo
-					game.printMyBoard(false, true);
-					timer.start();
-					break;
-				case LEFROTA:
-					myFleet = buildFleet(in);
-					game = new Game(myFleet);
-					current = new GameRecord();
-					game.printMyBoard(false, true);
-					timer.start();
-					break;
-				case STATUS:
-					if (myFleet != null)
-						myFleet.printStatus();
-					break;
-				case MAPA:
-					if (myFleet != null)
-						game.printMyBoard(false, true);
-					break;
-				case RAJADA:
-					if (game != null) {
-						lastAiResult = executeTurns(game, ai, in, lastAiResult, timer);
-
-						if (game.getRemainingShips() == 0 || checkPlayerWon(game)) {
-							endGame(game, historyWriter, current);
-						}
-					} else {
-						System.out.println("Ainda não iniciou nenhum jogo.");
-					}
-					break;
-				case SIMULA:
-					if (game != null) {
-						AIPlayer playerAi = new AIPlayer();
-						String lastPlayerAiResult = "";
-
-						while (game.getRemainingShips() > 0 && !checkPlayerWon(game)) {
-							StopWatch turnTimer = new StopWatch();
-							turnTimer.start();
-
-							int enemyShipsBefore = game.getAlienFleet().getFloatingShips().size();
-							int hitsBefore = game.getHits();
-
-							System.out.println("\n[SIMULAÇÃO] IA do Jogador a processar...");
-							String playerAiShotsJson = playerAi.nextShot(lastPlayerAiResult);
-							if (playerAiShotsJson != null) {
-								try {
-									List<IPosition> playerShots = parseAiShots(playerAiShotsJson);
-									game.firePlayerShots(playerShots);
-								} catch (Exception e) {
-									game.randomPlayerFire();
-								}
-							} else {
-								game.randomPlayerFire();
-							}
-
-							turnTimer.stop();
-							game.setLastTime(turnTimer.getTime());
-
-							IMove lastPlayerMove = game.getMyMoves().getLast();
-							lastPlayerAiResult = lastPlayerMove.processEnemyFire(false);
-
-							int enemyShipsAfter = game.getAlienFleet().getFloatingShips().size();
-							int hitsAfter = game.getHits();
-							SoundManager.play(decideSoundToPlay(enemyShipsBefore, enemyShipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
-
-							if (checkPlayerWon(game)) {
-								System.out.println("\n--- O MEU TABULEIRO ---");
-								game.printMyBoard(true, false);
-								System.out.println("\n--- TABULEIRO INIMIGO ---");
-								game.printAlienBoard(true, false);
-								System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
-								endGame(game, historyWriter, current);
-								break;
-							}
-
-							System.out.println("\n[SIMULAÇÃO] IA Inimiga a processar...");
-							String enemyAiShotsJson = ai.nextShot(lastAiResult);
-							if (enemyAiShotsJson != null) {
-								try {
-									List<IPosition> enemyShots = parseAiShots(enemyAiShotsJson);
-									game.fireShots(enemyShots);
-								} catch (Exception e) {
-									game.randomEnemyFire();
-								}
-							} else {
-								game.randomEnemyFire();
-							}
-
-							IMove lastEnemyMove = game.getAlienMoves().getLast();
-							lastAiResult = lastEnemyMove.processEnemyFire(false);
-
-							System.out.println("\n--- O MEU TABULEIRO ---");
-							game.printMyBoard(true, false);
-							System.out.println("\n--- TABULEIRO INIMIGO ---");
-							game.printAlienBoard(true, false);
-							System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
-
-							if (game.getRemainingShips() == 0 || checkPlayerWon(game)) {
-								endGame(game, historyWriter, current);
-								break;
-							}
-
-							try {
-								Thread.sleep(3000);
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt();
-								break;
-							}
-						}
-					} else {
-						System.out.println("Ainda não iniciou nenhum jogo.");
-					}
-					break;
-				case TIROS:
-					if (game != null) {
-						System.out.println("\n--- O MEU TABULEIRO ---");
-						game.printMyBoard(true, true);
-						System.out.println("\n--- TABULEIRO INIMIGO ---");
-						game.printAlienBoard(true, true);
-					}
-					break;
-                case AJUDA:
-                    menuHelp();
-                    break;
-				case HISTORICO:
-					List<GameRecord> historico = historyWriter.loadAllGames();
-					System.out.println("================= HISTÓRICO DE PARTIDAS ===================");
-					if(historico.isEmpty()) {
-						System.out.println("Nenhuma partida gravada até ao momento.");
-					} else {
-						for (GameRecord r: historico) {
-							System.out.printf("[%s] Resultado: %s | Tiros: %d | Acertos: %d%n",
-									r.getTimestamp(), r.getOutcome(), r.getTotalShots(), r.getTotalHits());
-						}
-					}
-					System.out.println("===========================================================");
-					break;
-				case PDF:
-					if (game != null) {
-						List<IMove> movesToExport = !game.getMyMoves().isEmpty() ? game.getMyMoves() : game.getAlienMoves();
-						PdfExporter.exportMovesToPdf(movesToExport, "relatorio_jogadas.pdf");
-					} else {
-						System.out.println("Ainda nao iniciou nenhum jogo!");
-					}
-					break;
-
-				case SCOREBOARD:
-					if (game != null && (!game.getMyMoves().isEmpty() || !game.getAlienMoves().isEmpty())) {
-						int totalMoves = !game.getMyMoves().isEmpty() ? game.getMyMoves().size() : game.getAlienMoves().size();
-						boolean playerWon = checkPlayerWon(game) && game.getRemainingShips() > 0;
-						ScoreBoardManager.saveScore("Jogador", totalMoves, game.getHits(), playerWon);
-					}
-					ScoreBoardManager.printScoreboard();
-					break;
-
-				case TUI:
-					if (game != null) {
-						BoardTUI tui = new BoardTUI((Game) game, current, historyWriter, ai);
-						tui.start();
-					} else
-						System.out.println("Ainda não iniciou nenhum jogo.");
-					break;
-
-
-				case TEMPO:
-					if (game != null) {
-						if (game.getLastTime() != -1)
-							System.out.println("Tempo da última jogada: " + game.getLastTime()/1000.0 + "s");
-						else
-							System.out.println("Ainda nào foi executada nenhuma rajada.");
-						game.printMyBoard(true, false);
-					}
-					else
-						System.out.println("Ainda não foi iniciado nenhum jogo.");
-					break;
-				default:
-					System.out.println("Que comando é esse??? Repete ...");
-			}
+		Command command = Command.fromKeyword(session.in.next());
+		while (command != Command.DESISTIR) {
+			COMMAND_ACTIONS.get(command).accept(session);
 			System.out.print("> ");
-			command = in.next();
+			command = Command.fromKeyword(session.in.next());
 		}
 
+		saveForfeit(session);
+		stopTimer(session.timer);
+		System.out.println(GOODBYE_MESSAGE);
+	}
+
+	/**
+	 * Gera uma frota aleatória e inicia um novo jogo
+	 * @param session sessão atual do menu
+	 */
+	private static void generateFleet(MenuSession session) {
+		session.myFleet = Fleet.createRandom();
+		startGame(session);
+	}
+
+	/**
+	 * Lê uma frota introduzida pelo utilizador e inicia um novo jogo
+	 * @param session sessão atual do menu
+	 */
+	private static void loadFleet(MenuSession session) {
+		session.myFleet = buildFleet(session.in);
+		startGame(session);
+	}
+
+	/**
+	 * Inicia um novo jogo com a frota da sessão
+	 * @param session sessão atual do menu
+	 */
+	private static void startGame(MenuSession session) {
+		session.game = new Game(session.myFleet);
+		session.current = new GameRecord(); //inicializa o registo do jogo
+		session.game.printMyBoard(false, true);
+		session.timer.start();
+	}
+
+	/**
+	 * Mostra o estado da frota
+	 * @param session sessão atual do menu
+	 */
+	private static void printFleetStatus(MenuSession session) {
+		if (session.myFleet != null)
+			session.myFleet.printStatus();
+	}
+
+	/**
+	 * Mostra o mapa da frota
+	 * @param session sessão atual do menu
+	 */
+	private static void printMap(MenuSession session) {
+		if (session.myFleet != null)
+			session.game.printMyBoard(false, true);
+	}
+
+	/**
+	 * Executa uma rajada do jogador e uma da IA, terminando o jogo se alguém ganhou
+	 * @param session sessão atual do menu
+	 */
+	private static void fireSalvo(MenuSession session) {
+		if (session.game != null) {
+			session.lastAiResult = executeTurns(session.game, session.ai, session.in, session.lastAiResult, session.timer);
+
+			if (session.game.getRemainingShips() == 0 || checkPlayerWon(session.game)) {
+				endGame(session.game, session.historyWriter, session.current);
+			}
+		} else {
+			System.out.println("Ainda não iniciou nenhum jogo.");
+		}
+	}
+
+	/**
+	 * Simula um jogo completo entre a IA do jogador e a IA inimiga
+	 * @param session sessão atual do menu
+	 */
+	private static void simulate(MenuSession session) {
+		if (session.game != null) {
+			runSimulation(session);
+		} else {
+			System.out.println("Ainda não iniciou nenhum jogo.");
+		}
+	}
+
+	/**
+	 * Executa turnos simulados até o jogo acabar ou a simulação ser interrompida
+	 * @param session sessão atual do menu
+	 */
+	private static void runSimulation(MenuSession session) {
+		AIPlayer playerAi = new AIPlayer();
+		String lastPlayerAiResult = "";
+
+		while (session.game.getRemainingShips() > 0 && !checkPlayerWon(session.game)) {
+			lastPlayerAiResult = simulatePlayerTurn(session.game, playerAi, lastPlayerAiResult);
+
+			if (checkPlayerWon(session.game)) {
+				printBoards(session.game, false);
+				endGame(session.game, session.historyWriter, session.current);
+				return;
+			}
+
+			simulateEnemyTurn(session);
+			printBoards(session.game, false);
+
+			if (session.game.getRemainingShips() == 0 || checkPlayerWon(session.game)) {
+				endGame(session.game, session.historyWriter, session.current);
+				return;
+			}
+
+			if (!waitBeforeNextTurn())
+				return;
+		}
+	}
+
+	/**
+	 * Executa a rajada simulada da IA do jogador, regista o tempo e toca o som correspondente
+	 * @param game jogo atual
+	 * @param playerAi agente que joga pelo jogador
+	 * @param lastPlayerAiResult json com o resultado da última rajada da IA do jogador
+	 * @return resultado da nova rajada da IA do jogador
+	 */
+	private static String simulatePlayerTurn(IGame game, AIPlayer playerAi, String lastPlayerAiResult) {
+		StopWatch turnTimer = new StopWatch();
+		turnTimer.start();
+
+		int enemyShipsBefore = game.getAlienFleet().getFloatingShips().size();
+		int hitsBefore = game.getHits();
+
+		firePlayerAiShots(game, playerAi, lastPlayerAiResult);
+
+		turnTimer.stop();
+		game.setLastTime(turnTimer.getTime());
+
+		IMove lastPlayerMove = game.getMyMoves().getLast();
+		String playerAiResult = lastPlayerMove.processEnemyFire(false);
+
+		int enemyShipsAfter = game.getAlienFleet().getFloatingShips().size();
+		int hitsAfter = game.getHits();
+		SoundManager.play(decideSoundToPlay(enemyShipsBefore, enemyShipsAfter, hitsBefore, hitsAfter).concat(".mp3"));
+		return playerAiResult;
+	}
+
+	/**
+	 * Dispara os tiros da IA do jogador, ou tiros aleatórios se a IA falhar
+	 * @param game jogo atual
+	 * @param playerAi agente que joga pelo jogador
+	 * @param lastPlayerAiResult json com o resultado da última rajada da IA do jogador
+	 */
+	private static void firePlayerAiShots(IGame game, AIPlayer playerAi, String lastPlayerAiResult) {
+		System.out.println("\n[SIMULAÇÃO] IA do Jogador a processar...");
+		String playerAiShotsJson = playerAi.nextShot(lastPlayerAiResult);
+		if (playerAiShotsJson != null) {
+			try {
+				game.firePlayerShots(parseAiShots(playerAiShotsJson));
+			} catch (Exception e) {
+				game.randomPlayerFire();
+			}
+		} else {
+			game.randomPlayerFire();
+		}
+	}
+
+	/**
+	 * Executa a rajada simulada da IA inimiga e guarda o resultado na sessão
+	 * @param session sessão atual do menu
+	 */
+	private static void simulateEnemyTurn(MenuSession session) {
+		System.out.println("\n[SIMULAÇÃO] IA Inimiga a processar...");
+		String enemyAiShotsJson = session.ai.nextShot(session.lastAiResult);
+		if (enemyAiShotsJson != null) {
+			try {
+				session.game.fireShots(parseAiShots(enemyAiShotsJson));
+			} catch (Exception e) {
+				session.game.randomEnemyFire();
+			}
+		} else {
+			session.game.randomEnemyFire();
+		}
+
+		IMove lastEnemyMove = session.game.getAlienMoves().getLast();
+		session.lastAiResult = lastEnemyMove.processEnemyFire(false);
+	}
+
+	/**
+	 * Espera 3 segundos entre turnos simulados
+	 * @return true se esperou, false se a espera foi interrompida
+	 */
+	private static boolean waitBeforeNextTurn() {
+		try {
+			Thread.sleep(3000);
+			return true;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
+		}
+	}
+
+	/**
+	 * Mostra os tiros válidos realizados nos dois tabuleiros
+	 * @param session sessão atual do menu
+	 */
+	private static void printShots(MenuSession session) {
+		if (session.game != null) {
+			System.out.println("\n--- O MEU TABULEIRO ---");
+			session.game.printMyBoard(true, true);
+			System.out.println("\n--- TABULEIRO INIMIGO ---");
+			session.game.printAlienBoard(true, true);
+		}
+	}
+
+	/**
+	 * Mostra o histórico de partidas guardadas
+	 * @param session sessão atual do menu
+	 */
+	private static void printHistory(MenuSession session) {
+		List<GameRecord> historico = session.historyWriter.loadAllGames();
+		System.out.println("================= HISTÓRICO DE PARTIDAS ===================");
+		if(historico.isEmpty()) {
+			System.out.println("Nenhuma partida gravada até ao momento.");
+		} else {
+			for (GameRecord r: historico) {
+				System.out.printf("[%s] Resultado: %s | Tiros: %d | Acertos: %d%n",
+						r.getTimestamp(), r.getOutcome(), r.getTotalShots(), r.getTotalHits());
+			}
+		}
+		System.out.println("===========================================================");
+	}
+
+	/**
+	 * Exporta as jogadas do jogo atual para PDF
+	 * @param session sessão atual do menu
+	 */
+	private static void exportPdf(MenuSession session) {
+		if (session.game != null) {
+			List<IMove> movesToExport = !session.game.getMyMoves().isEmpty() ? session.game.getMyMoves() : session.game.getAlienMoves();
+			PdfExporter.exportMovesToPdf(movesToExport, "relatorio_jogadas.pdf");
+		} else {
+			System.out.println("Ainda nao iniciou nenhum jogo!");
+		}
+	}
+
+	/**
+	 * Guarda a pontuação do jogo atual, se existir, e mostra o scoreboard
+	 * @param session sessão atual do menu
+	 */
+	private static void showScoreboard(MenuSession session) {
+		IGame game = session.game;
+		if (game != null && (!game.getMyMoves().isEmpty() || !game.getAlienMoves().isEmpty())) {
+			int totalMoves = !game.getMyMoves().isEmpty() ? game.getMyMoves().size() : game.getAlienMoves().size();
+			boolean playerWon = checkPlayerWon(game) && game.getRemainingShips() > 0;
+			ScoreBoardManager.saveScore("Jogador", totalMoves, game.getHits(), playerWon);
+		}
+		ScoreBoardManager.printScoreboard();
+	}
+
+	/**
+	 * Abre o tabuleiro gráfico no terminal
+	 * @param session sessão atual do menu
+	 */
+	private static void openTui(MenuSession session) {
+		if (session.game != null) {
+			new BoardTUI((Game) session.game, session.current, session.historyWriter, session.ai).start();
+		} else
+			System.out.println("Ainda não iniciou nenhum jogo.");
+	}
+
+	/**
+	 * Mostra o tempo da última rajada do jogador
+	 * @param session sessão atual do menu
+	 */
+	private static void printLastTime(MenuSession session) {
+		if (session.game != null) {
+			if (session.game.getLastTime() != -1)
+				System.out.println("Tempo da última jogada: " + session.game.getLastTime()/1000.0 + "s");
+			else
+				System.out.println("Ainda nào foi executada nenhuma rajada.");
+			session.game.printMyBoard(true, false);
+		}
+		else
+			System.out.println("Ainda não foi iniciado nenhum jogo.");
+	}
+
+	/**
+	 * Avisa o utilizador de que o comando não existe
+	 */
+	private static void unknownCommand() {
+		System.out.println("Que comando é esse??? Repete ...");
+	}
+
+	/**
+	 * Guarda o jogo atual como desistência, se ainda não tiver resultado
+	 * @param session sessão atual do menu
+	 */
+	private static void saveForfeit(MenuSession session) {
+		GameRecord current = session.current;
 		if (current != null && current.getOutcome() == null) {
 			current.setOutcome("DESISTÊNCIA");
-			if (game != null) {
-				List<IMove> movesToSave = !game.getMyMoves().isEmpty() ? game.getMyMoves() : game.getAlienMoves();
+			if (session.game != null) {
+				List<IMove> movesToSave = !session.game.getMyMoves().isEmpty() ? session.game.getMyMoves() : session.game.getAlienMoves();
 				for (IMove move : movesToSave) {
 					current.addMove(move);
 				}
 			}
-			historyWriter.saveGame(current);
+			session.historyWriter.saveGame(current);
 		}
+	}
+
+	/**
+	 * Para o cronómetro, se estiver a contar
+	 * @param timer cronómetro das jogadas
+	 */
+	private static void stopTimer(StopWatch timer) {
 		if (timer.isStarted()) {
 			timer.stop();
 		}
 		// Quando desiste simplesmente para o timer
 		if (timer.isStarted()) timer.stop(); //apanhamos exceção
-		System.out.println(GOODBYE_MESSAGE);
 	}
 
 	/**
@@ -279,19 +391,19 @@ public class Tasks {
 	public static void menuHelp() {
 		System.out.println("======================= AJUDA DO MENU =========================");
 		System.out.println("Digite um dos comandos abaixo para interagir com o jogo:");
-		System.out.println("- " + GERAFROTA + ": Gera uma frota aleatória de navios.");
-		System.out.println("- " + LEFROTA + ": Permite criar e carregar uma frota personalizada.");
-		System.out.println("- " + STATUS + ": Mostra o status atual da frota.");
-		System.out.println("- " + MAPA + ": Exibe o mapa da frota.");
-		System.out.println("- " + RAJADA + ": Realiza uma rajada de disparos.");
-		System.out.println("- " + SIMULA + ": Simula um jogo completo.");
-		System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
-		System.out.println("- " + HISTORICO + ": Exibe o histórico de partidas guardadas.");
-		System.out.println("- " + TUI + ": Exibe o tabuleiro gráfico no terminal.");
-		System.out.println("- " + TEMPO + ": Exibe o tempo que o jogador demorou para fazer a última rajada.");
-		System.out.println("- " + SCOREBOARD + ": Imprime dados do jogo na consola");
-		System.out.println("- " + PDF + ": Gera o ficheiro pdf com os dados que são impressos na consola no scoreboard");
-		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
+		System.out.println("- " + Command.GERAFROTA.getKeyword() + ": Gera uma frota aleatória de navios.");
+		System.out.println("- " + Command.LEFROTA.getKeyword() + ": Permite criar e carregar uma frota personalizada.");
+		System.out.println("- " + Command.STATUS.getKeyword() + ": Mostra o status atual da frota.");
+		System.out.println("- " + Command.MAPA.getKeyword() + ": Exibe o mapa da frota.");
+		System.out.println("- " + Command.RAJADA.getKeyword() + ": Realiza uma rajada de disparos.");
+		System.out.println("- " + Command.SIMULA.getKeyword() + ": Simula um jogo completo.");
+		System.out.println("- " + Command.TIROS.getKeyword() + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
+		System.out.println("- " + Command.HISTORICO.getKeyword() + ": Exibe o histórico de partidas guardadas.");
+		System.out.println("- " + Command.TUI.getKeyword() + ": Exibe o tabuleiro gráfico no terminal.");
+		System.out.println("- " + Command.TEMPO.getKeyword() + ": Exibe o tempo que o jogador demorou para fazer a última rajada.");
+		System.out.println("- " + Command.SCOREBOARD.getKeyword() + ": Imprime dados do jogo na consola");
+		System.out.println("- " + Command.PDF.getKeyword() + ": Gera o ficheiro pdf com os dados que são impressos na consola no scoreboard");
+		System.out.println("- " + Command.DESISTIR.getKeyword() + ": Encerra o jogo.");
 		System.out.println("===============================================================");
 	}
 	/**
@@ -423,11 +535,7 @@ public class Tasks {
 
 		game.readPlayerFire(in);
 
-		if (timer.isStarted()) {
-			timer.stop();
-		}
-		game.setLastTime(timer.getTime());
-		timer.reset();
+		recordTurnTime(game, timer);
 
 		int enemyShipsAfter = game.getAlienFleet().getFloatingShips().size();
 		int hitsAfter = game.getHits();
@@ -436,31 +544,49 @@ public class Tasks {
 
 		String newAiReport = lastAiResult;
 		if (!checkPlayerWon(game)) {
-			System.out.println("IA a processar...");
-			String aiShotsJson = ai.nextShot(lastAiResult);
-			if (aiShotsJson != null) {
-				try {
-					List<IPosition> aiShots = parseAiShots(aiShotsJson);
-					game.fireShots(aiShots);
-				} catch (Exception e) {
-					game.randomEnemyFire();
-				}
-			} else {
-				game.randomEnemyFire();
-			}
-			IMove lastMove = game.getAlienMoves().getLast();
-			newAiReport = lastMove.processEnemyFire(false);
+			newAiReport = executeAiTurn(game, ai, lastAiResult);
 		}
 
-		System.out.println("\n--- O MEU TABULEIRO ---");
-		game.printMyBoard(true, true);
-		System.out.println("\n--- TABULEIRO INIMIGO ---");
-		game.printAlienBoard(true, true);
-
-		System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
+		printBoards(game, true);
 
 		timer.start();
 		return newAiReport;
+	}
+
+	private static void printBoards(IGame game, boolean showLegend) {
+		System.out.println("\n--- O MEU TABULEIRO ---");
+		game.printMyBoard(true, showLegend);
+		System.out.println("\n--- TABULEIRO INIMIGO ---");
+		game.printAlienBoard(true, showLegend);
+
+		System.out.println("Tempo da jogada: " + (game.getLastTime() / 1000.0) + "s");
+	}
+
+	private static String executeAiTurn(IGame game, AIPlayer ai, String lastAiResult) {
+		String newAiReport;
+		System.out.println("IA a processar...");
+		String aiShotsJson = ai.nextShot(lastAiResult);
+		if (aiShotsJson != null) {
+			try {
+				List<IPosition> aiShots = parseAiShots(aiShotsJson);
+				game.fireShots(aiShots);
+			} catch (Exception e) {
+				game.randomEnemyFire();
+			}
+		} else {
+			game.randomEnemyFire();
+		}
+		IMove lastMove = game.getAlienMoves().getLast();
+		newAiReport = lastMove.processEnemyFire(false);
+		return newAiReport;
+	}
+
+	private static void recordTurnTime(IGame game, StopWatch timer) {
+		if (timer.isStarted()) {
+			timer.stop();
+		}
+		game.setLastTime(timer.getTime());
+		timer.reset();
 	}
 
 	/**

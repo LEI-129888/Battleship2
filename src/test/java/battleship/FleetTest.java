@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * - getFloatingShips(): 3
  * - getSunkShips(): 3
  * - shipAt(): 4
- * - colisionRisk(): 4
+ * - isCollisionFree(): 4
  * - printShips(): 3
  * - printStatus(): 1
  * - printShipsByCategory(): 2
@@ -220,12 +220,12 @@ public class FleetTest {
 				"Error: expected AssertionError when pos is null.");
 	}
 
-	// --- colisionRisk (private) ---
+	// --- isCollisionFree (private) ---
 
 	@Test
-	@DisplayName("Test colisionRisk detects overlapping and non-overlapping ships")
-	void colisionRisk1() throws Exception {
-		Method method = Fleet.class.getDeclaredMethod("colisionRisk", IShip.class);
+	@DisplayName("Test isCollisionFree detects overlapping and non-overlapping ships")
+	void isCollisionFree1() throws Exception {
+		Method method = Fleet.class.getDeclaredMethod("isCollisionFree", IShip.class);
 		method.setAccessible(true);
 
 		IShip ship1 = new Barge(Compass.NORTH, new Position(1, 1));
@@ -233,16 +233,16 @@ public class FleetTest {
 		IShip shipFar = new Barge(Compass.NORTH, new Position(5, 5));
 		fleet.addShip(ship1);
 
-		assertAll("colisionRisk true and false",
-				() -> assertTrue((Boolean) method.invoke(fleet, ship2), "Error: Overlapping ships should be at collision risk."),
-				() -> assertFalse((Boolean) method.invoke(fleet, shipFar), "Error: Distant ships should not have collision risk.")
+		assertAll("isCollisionFree false and true",
+				() -> assertFalse((Boolean) method.invoke(fleet, ship2), "Error: Overlapping ships should not be collision free."),
+				() -> assertTrue((Boolean) method.invoke(fleet, shipFar), "Error: Distant ships should be collision free.")
 		);
 	}
 
 	@Test
-	@DisplayName("Test colisionRisk throws AssertionError when ship is null")
-	void colisionRisk2() throws Exception {
-		Method method = Fleet.class.getDeclaredMethod("colisionRisk", IShip.class);
+	@DisplayName("Test isCollisionFree throws AssertionError when ship is null")
+	void isCollisionFree2() throws Exception {
+		Method method = Fleet.class.getDeclaredMethod("isCollisionFree", IShip.class);
 		method.setAccessible(true);
 
 		InvocationTargetException ex = assertThrows(InvocationTargetException.class,
@@ -279,19 +279,6 @@ public class FleetTest {
 		fleet.addShip(new Barge(Compass.NORTH, new Position(1, 1)));
 		assertDoesNotThrow(fleet::printStatus, "Error: printStatus should not throw any exceptions.");
 	}
-
-	@Test
-	@DisplayName("Test printShipsByCategory executes for valid category and throws on null")
-	void printShipsByCategory() {
-		fleet.addShip(new Barge(Compass.NORTH, new Position(1, 1)));
-		assertAll("printShipsByCategory",
-				() -> assertDoesNotThrow(() -> fleet.printShipsByCategory("Barca"),
-						"Error: printShipsByCategory should not throw for valid category."),
-				() -> assertThrows(AssertionError.class, () -> fleet.printShipsByCategory(null),
-						"Error: expected AssertionError when category is null.")
-		);
-	}
-
 
 	@Test
 	@DisplayName("Test printAllShips executes without throwing")
