@@ -48,9 +48,9 @@ public class ShipTest {
         // Concrete anonymous subclass with 3 non-monotonic positions to cover all loop/if branches
         multiPosShip = new Ship("TestShip", Compass.NORTH, new Position(5, 5), 3) {
             {
-                positions.add(new Position(5, 5));
-                positions.add(new Position(3, 7));
-                positions.add(new Position(7, 3));
+                getPositions().add(new Position(5, 5));
+                getPositions().add(new Position(3, 7));
+                getPositions().add(new Position(7, 3));
             }
         };
     }
