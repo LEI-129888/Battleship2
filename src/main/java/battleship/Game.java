@@ -268,13 +268,13 @@ public class Game implements IGame
 		List<IPosition> shots = new ArrayList<IPosition>(); // Criar lista para armazenar os tiros
 		System.out.println();
 
-		IPosition newShot = null; // Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
 		if (candidateShots.size() >= Game.NUMBER_SHOTS)
 			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, candidateShots, random);
 		else {
 			fillShotsFromCandidates(shots, candidateShots.size(), candidateShots, random);
+			IPosition lastShot = shots.getLast();
 			while (shots.size() < Game.NUMBER_SHOTS)
-				shots.add(newShot);
+				shots.add(lastShot);
 		}
 		return shots;
 	}
@@ -593,13 +593,13 @@ public class Game implements IGame
 		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
 		List<IPosition> shots = new ArrayList<IPosition>();
 
-		IPosition newShot = null;
 		if (candidateShots.size() >= Game.NUMBER_SHOTS)
 			fillShotsFromCandidates(shots, Game.NUMBER_SHOTS, candidateShots, random);
 		else {
 			fillShotsFromCandidates(shots, candidateShots.size(), candidateShots, random);
+			IPosition lastShot = shots.getLast();
 			while (shots.size() < Game.NUMBER_SHOTS)
-				shots.add(newShot);
+				shots.add(lastShot);
 		}
 
 		System.out.print("rajada jogador (auto) ");
